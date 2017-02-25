@@ -1,7 +1,7 @@
 from django.conf.urls import url,include
-from .views import index,AddUser
+from .views import AddUser,LoginHome
 
 urlpatterns = [
-    url(r'^$',index,name='index'),
+    url(r'^$',LoginHome.as_view(),name='login'),
     url(r'^add/',AddUser.as_view(),name='add'),
 ]
