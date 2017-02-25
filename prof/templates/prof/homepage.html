@@ -1,0 +1,15 @@
+<h1>{{ prof.name }}</h1>
+<p>{{ prof.profID }}</p>
+<p>{{ prof.deptID }}</p>
+<p>{{ prof.email }}</p>
+
+{% if course_list %}
+    <ul>
+    {% for course in course_list %}
+        <li><a href="/prof/course/{{ course.courseID }}/">{{ course.name }}</a></li>
+        <!-- <p>{{ course.name }}</p> -->
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Courses</p>
+{% endif %}
