@@ -1,8 +1,11 @@
-<h1>{{ prof.name }}</h1>
-<p>{{ prof.ID }}</p>
-<p>{{ prof.deptID }}</p>
-<p>{{ prof.email }}</p>
+<h1><center>Professor Home Page</center></h1>
 
+<p>Name: {{ prof.name }}</p>
+<p>ID: {{ prof.ID }}</p>
+<p>Department: {{ prof.deptID }}</p>
+<p>Email: {{ prof.email }}</p>
+
+<h2>Courses</h2>
 {% if course_list %}
     <ul>
     {% for course in course_list %}
@@ -13,3 +16,7 @@
 {% else %}
     <p>No Courses</p>
 {% endif %}
+
+<form action="/prof/addCourse/">
+    <input type="submit" value="Add Course"></input>
+</form>

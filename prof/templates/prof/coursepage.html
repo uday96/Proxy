@@ -1,9 +1,14 @@
-<h1>{{ course.name }}</h1>
-<p>{{ course.courseID }}</p>
-<p>{{ course.deptID }}</p>
-<p>{{ course.room }}</p>
-<p>{{ prof.name }}</p>
+<h1><center>Course Details</center></h1>
 
+<p>Name: {{ course.name }}</p>
+<p>ID: {{ course.courseID }}</p>
+<p>Dept: {{ course.deptID }}</p>
+<p>Room: {{ course.room }}</p>
+<p>Professor Name: {{ prof.name }}</p>
+
+<form action="/prof/addStudents/{{ course.courseID }}/">
+    <input type="submit" value="Add Students"></input>
+</form>
 
 <!-- {% if prof %}
     <ul>
