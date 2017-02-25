@@ -1,0 +1,19 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="panel-body">
+      
+      	{% csrf_token %}
+
+        <h1>Name : <b>{{ student.name }}</b></h1>
+		<p>ID : <b>{{ student.ID }}</b></p>
+		<p>DeptID : <b>{{ student.deptID }}</b></p>
+		<p>EmailID : <b>{{ student.email }}</b></p>
+      
+    </div>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container" style="width:30%">
+      
+        <form method="post" class="uniForm">
+            {% csrf_token %}
+            <p><h1>{{header}}<br></h1></p>
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      
+    </div>
+  </body>
+</html>
