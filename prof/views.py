@@ -20,11 +20,14 @@ def homePage(request, email_id):
 
 def showCourse(request, course_id):
     # return HttpResponse("Hello, world. You're at the prof index page.")
+    # print course_id
     course = Course.objects.get(courseID=course_id)
+    # print course.profID
     # courseList = Course.objects.filter(profID=prof.profID)
     try:
-        prof = User.objects.get(ID=course.profID)
+        prof = Users.objects.get(ID=course.profID)
         context = {'course': course, 'prof' : prof}
+        # print context
         return render(request, 'prof/coursepage.html', context)
     except:
     	print "Error"

@@ -15,7 +15,7 @@ class Course(models.Model):
 	courseID = models.CharField(max_length=100)
 	deptID = models.CharField(max_length=100)
 	room = models.CharField(max_length=100)
-	year = models.IntegerField()
+	year = models.IntegerField(default=2017)
 	# profList = models.ManyToManyField(
 	# 		profID = '',
 	# 	)
