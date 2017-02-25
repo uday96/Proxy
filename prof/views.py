@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from .models import Course
 from login.models import Users
 from .forms import CourseAddForm, StudentAddForm
+from photo.microsoft import create_person,create_person_group
 # Create your views here.
 
 class AddCourse(View):
@@ -28,6 +29,7 @@ class AddCourse(View):
             room = form.cleaned_data['room']
             profEmail = request.session['email']
             prof = Users.objects.get(email=profEmail)
+            create_person_group(profEmail,name,year)
             # Call the function to create PersonGroup Microsoft API
             return HttpResponse("courseID, year, profID: " + str(courseID) + "," + str(year) + "," + str(prof.ID))
         else:
@@ -36,12 +38,12 @@ class AddCourse(View):
 class AddStudents(View):
     template_name = 'prof/add.html'
 
-    def get(self, request, course_id):
+    def get(self, request, course_info):
         print 'AddStudents get'
         form = StudentAddForm()
         return render(request,self.template_name,{'form' : form })
 
-    def post(self, request, course_id, **kwargs):
+    def post(self, request, course_info, **kwargs):
         print 'AddStudents post'
         form = StudentAddForm(request.POST)
         if form.is_valid():
@@ -53,6 +55,8 @@ class AddStudents(View):
             profEmail = request.session['email']
             prof = Users.objects.get(email=profEmail)
             studentIDs = str(form.cleaned_data['studentIDs']).split(',')
+            [course_id, year] = str(course_info).split(',')
+            create_person(course_id,year,studentIDs)
             print request.POST
             # courseID = request.POST.get('courseID')
             # Call the function to create PersonGroup Microsoft API

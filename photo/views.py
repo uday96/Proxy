@@ -28,7 +28,7 @@ class UploadPhoto(View):
 
 	def post(self, request, **kwargs):
 		form = UploadFileForm(request.POST, request.FILES)
-		user = "admin"
+		user = request.session['email']
 		if form.is_valid():
 			print 'valid form'
 			name = request.POST['title']
@@ -59,14 +59,16 @@ class UploadClassPhotos(View):
 
 	template_name = "class_upload.html"
 
-	def get(self, request):
+	def get(self, request,course_info):
 		print 'Upload a class photo'
+		
 		form = ClassPhotoForm()
 		return render(request,self.template_name,{'form' : form })
 
-	def post(self, request, **kwargs):
+	def post(self, request,course_info, **kwargs):
 		form = ClassPhotoForm(request.POST, request.FILES)
-		course_name = "cs3300_2017"
+		info = course_info.split(",")
+		course_name = str.lower(info[0]) + "_" + str(info[1])
 		if form.is_valid():
 			print 'valid form'
 			course = request.POST['course']
@@ -80,7 +82,7 @@ class UploadClassPhotos(View):
 			response = cloudinary.uploader.upload(instance.pic.url)
 			url = response['url']
 
-			instance = ClassPhoto(course = course,date = date, url = url)
+			instance = ClassPhoto(course = course_name,date = date, url = url)
 			instance.save()	
 
 			# Account creation is successful. Now we need to add the first user

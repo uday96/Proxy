@@ -24,7 +24,7 @@ def create_person_group(prof_id,course_name,year):
 	else :
 		print "Error in creating group"
 
-def create_person(course_name,year,student_id):
+def create_person(course_name,year,student_ids):
 	group_id = str.lower(course_name) + "_" + str(year)	
 	url = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/" + group_id +"/persons"
 
@@ -33,24 +33,29 @@ def create_person(course_name,year,student_id):
 			"Ocp-Apim-Subscription-Key": MICROSOFT_KEY
 	}
 
-	student = Users.objects.get(ID = student_id,role = 'S')
-	name = student.name
+	for student_id in student_ids:
 
-	data = {
-	   "name" : name
-	}
-	response = requests.post(url,headers=headers,data = data)
+		try:
+			student = Users.objects.get(ID = student_id,role = 'S')
+			name = student.name
 
-	resp  = response.json()
+			data = {
+			   "name" : name
+			}
+			response = requests.post(url,headers=headers,data = data)
+
+			resp  = response.json()
 
 
-	if response.status_code == 200:
-		person_id = resp['personId']
-		person = CourseGroup(person_group_id = group_id,student_id=student_id,person_id = person_id)
-		person.save()
-		print "person created"
-	else:
-		print "error in creating person"
+			if response.status_code == 200:
+				person_id = resp['personId']
+				person = CourseGroup(person_group_id = group_id,student_id=student_id,person_id = person_id)
+				person.save()
+				print "person created"
+			else:
+				print "error in creating person"
+		except Exception as e:
+			print str(e)
 
 def add_person_image(student_id,img_url):
 	persons = PersonPhoto.objects.all(student_id = student_id)
