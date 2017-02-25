@@ -35,6 +35,7 @@ class LoginHome(View):
 				userob = Users.objects.get(email=mail)
 				if(check_password(password,userob.password)==True):
 					print "Password Match"
+					request.session['email'] = mail
 					return HttpResponse("Login Successful")
 				print "Password Mismatch"
 				return redirect("/login/")	
