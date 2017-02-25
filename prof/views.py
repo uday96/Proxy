@@ -10,6 +10,9 @@ from student.models import Queries
 from .forms import CourseAddForm, StudentAddForm, UpdateAttendanceForm
 from photo.microsoft import create_person,create_person_group
 import datetime
+from photo.models import CourseGroup
+from pymsgbox import *
+
 # Create your views here.
 
 class AddCourse(View):
@@ -32,8 +35,18 @@ class AddCourse(View):
             profEmail = request.session['email']
             prof = Users.objects.get(email=profEmail)
             create_person_group(profEmail,name,year)
+            instance = Course(courseID=courseID, year=year, deptID=prof.deptID, name=name, room=room, profID=prof.ID)
+            instance.save()
+            alert(text='', title='', button='OK')
+            try:
+                courseList = Course.objects.filter(profID=prof.ID)
+                context = {'course_list': courseList, 'prof' : prof}
+                return render(request, 'prof/homepage.html', context)
+            except:
+                print "Error"
+            return HttpResponse("Error")
             # Call the function to create PersonGroup Microsoft API
-            return HttpResponse("courseID, year, profID: " + str(courseID) + "," + str(year) + "," + str(prof.ID))
+            # return HttpResponse("courseID, year, profID: " + str(courseID) + "," + str(year) + "," + str(prof.ID))
         else:
             return HttpResponse("Error")
 
@@ -50,19 +63,24 @@ class AddStudents(View):
         form = StudentAddForm(request.POST)
         if form.is_valid():
             print 'valid form'
-            # name = form.cleaned_data['name']
-            # courseID = form.cleaned_data['courseID']
-            # year = form.cleaned_data['year']
-            # room = form.cleaned_data['room']
             profEmail = request.session['email']
             prof = Users.objects.get(email=profEmail)
             studentIDs = str(form.cleaned_data['studentIDs']).split(',')
             [course_id, year] = str(course_info).split(',')
             create_person(course_id,year,studentIDs)
-            print request.POST
-            # courseID = request.POST.get('courseID')
+            # alert('Success')
+            alert(text='', title='', button='OK')
+            # print request.POST
             # Call the function to create PersonGroup Microsoft API
-            return HttpResponse("courseID, studentIDs, profID: " + str(course_id) + "," + str(studentIDs) + "," + str(prof.ID))
+            course = Course.objects.get(courseID=course_id, year=year)
+            studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(course_id))+"_"+str(year)))
+            try:
+                context = {'course': course, 'prof' : prof, 'studentList' : studentList}
+                return render(request, 'prof/coursepage.html', context)
+            except:
+                print "Error"
+            return HttpResponse("Error")
+            # return HttpResponse("courseID, studentIDs, profID: " + str(course_id) + "," + str(studentIDs) + "," + str(prof.ID))
         else:
             return HttpResponse("Error")
             
@@ -80,15 +98,17 @@ def homePage(request, email_id):
     # return render(request, 'prof/homepage.html', context)
     return HttpResponse("Error")
 
-def showCourse(request, course_id):
+def showCourse(request, course_info):
     # return HttpResponse("Hello, world. You're at the prof index page.")
     # print course_id
-    course = Course.objects.get(courseID=course_id)
+    [course_id, year] = str(course_info).split(',')
+    course = Course.objects.get(courseID=course_id, year=year)
+    studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(course_id))+"_"+str(year)))
     # print course.profID
     # courseList = Course.objects.filter(profID=prof.profID)
     try:
         prof = Users.objects.get(ID=course.profID)
-        context = {'course': course, 'prof' : prof}
+        context = {'course': course, 'prof' : prof, 'studentList' : studentList}
         # print context
         return render(request, 'prof/coursepage.html', context)
     except:
