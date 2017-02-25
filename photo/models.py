@@ -26,4 +26,18 @@ class ClassPhoto(models.Model):
 	def __str__(self):
 		return self.course
 
+class CourseGroup(models.Model):
+	person_group_id = models.CharField(max_length=128)
+	student_id = models.CharField(max_length=50)
+	person_id = models.CharField(max_length=128)
+
+	def __str__(self):
+		return self.person_id
+
+class PersonPhoto(models.Model):
+	person_id = models.CharField(max_length=128)
+	persisted_id  = models.CharField(max_length=128)
+
+	def __str__(self):
+		return self.persisted_id
 

@@ -14,6 +14,8 @@ from django.contrib import messages
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from microsoft import add_person_image
+from login.models import Users
 # Create your views here.
 
 class UploadPhoto(View):
@@ -26,7 +28,7 @@ class UploadPhoto(View):
 
 	def post(self, request, **kwargs):
 		form = UploadFileForm(request.POST, request.FILES)
-		user_name = "admin"
+		user = request.session['email']
 		if form.is_valid():
 			print 'valid form'
 			name = request.POST['title']
@@ -37,8 +39,8 @@ class UploadPhoto(View):
 			print instance.pic.url	
 			response = cloudinary.uploader.upload(instance.pic.url)
 			url = response['url']	
-			instance = StudentPhoto(user_name = user_name,url=url)
-			instance.save()
+			student = Users.objects.get(email = user, role = 'S')
+			add_person_image(student.ID,url)
 			# Account creation is successful. Now we need to add the first user
 			# to this account. This user will also be the admin of the account.
 			return HttpResponse("Added Successfully!")
@@ -57,14 +59,16 @@ class UploadClassPhotos(View):
 
 	template_name = "class_upload.html"
 
-	def get(self, request):
+	def get(self, request,course_info):
 		print 'Upload a class photo'
+		
 		form = ClassPhotoForm()
 		return render(request,self.template_name,{'form' : form })
 
-	def post(self, request, **kwargs):
+	def post(self, request,course_info, **kwargs):
 		form = ClassPhotoForm(request.POST, request.FILES)
-		course_name = "cs3300_2017"
+		info = course_info.split(",")
+		course_name = str.lower(info[0]) + "_" + str(info[1])
 		if form.is_valid():
 			print 'valid form'
 			course = request.POST['course']
@@ -78,7 +82,7 @@ class UploadClassPhotos(View):
 			response = cloudinary.uploader.upload(instance.pic.url)
 			url = response['url']
 
-			instance = ClassPhoto(course = course,date = date, url = url)
+			instance = ClassPhoto(course = course_name,date = date, url = url)
 			instance.save()	
 
 			# Account creation is successful. Now we need to add the first user
@@ -94,4 +98,6 @@ class UploadClassPhotos(View):
 			return HttpResponse("Invalid Form!")
 
 		return redirect("/login/")
+
+
 
