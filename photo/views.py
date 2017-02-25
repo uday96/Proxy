@@ -68,7 +68,7 @@ class UploadClassPhotos(View):
 	def post(self, request,course_info, **kwargs):
 		form = ClassPhotoForm(request.POST, request.FILES)
 		info = str(course_info).split(",")
-		course_name = str.lower(info[0]) + "_" + str(info[1])
+		group_id = str.lower(info[0]) + "_" + str(info[1])
 		if form.is_valid():
 			print 'valid form'
 			course = request.POST['course']
@@ -82,7 +82,7 @@ class UploadClassPhotos(View):
 			response = cloudinary.uploader.upload(instance.pic.url)
 			url = response['url']
 
-			instance = ClassPhoto(course = course_name,date = date, url = url)
+			instance = ClassPhoto(course = group_id,date = date, url = url)
 			instance.save()	
 
 			detect_faces(info[0],info[1],date,[url])
