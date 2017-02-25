@@ -5,8 +5,10 @@ import random
 
 # Create your models here.
 class Users(models.Model):
-    name = models.CharField(max_length=64)
-    email = models.EmailField(max_length=64)
+    ID = models.CharField(max_length=100)
+    deptID = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100)
     ROLES = (
         ('S', 'Student'),
         ('T', 'Teacher'),
