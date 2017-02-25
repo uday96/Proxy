@@ -1,22 +1,27 @@
-<h1><center>Course Details</center></h1>
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="panel-info">
+	    <div class="panel-heading">
+	    	<h1><center>Course Details</center></h1>
 
-<p>Name: {{ course.name }}</p>
-<p>ID: {{ course.courseID }}</p>
-<p>Dept: {{ course.deptID }}</p>
-<p>Room: {{ course.room }}</p>
-<p>Professor Name: {{ prof.name }}</p>
-
-<form action="/prof/addStudents/{{ course.courseID }}/">
-    <input type="submit" value="Add Students"></input>
-</form>
-
-<!-- {% if prof %}
-    <ul>
-    {% for course in course_list %}
-        <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
-        <p>{{ course.name }}</p>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No Courses</p>
-{% endif %} -->
+			<p>Name: {{ course.name }}</p>
+			<p>ID: {{ course.courseID }}</p>
+			<p>Dept: {{ course.deptID }}</p>
+			<p>Room: {{ course.room }}</p>
+			<p>Professor Name: {{ prof.name }}</p>
+	      
+	    </div>
+	    <div class="panel-body">
+	    	{% csrf_token %}
+	    	<form action="/prof/addStudents/{{ course.courseID }}/">
+			    <button type="submit" class="btn btn-primary">Add Students</button>
+			</form>
+	    </div>
+	</div>
+  </body>
+</html>
