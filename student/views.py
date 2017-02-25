@@ -34,7 +34,7 @@ class RaiseQuery(View):
 
 	def get(self,request):
 		print "raisequery get"
-		email = request.session['email'] if 'email' in request.session else email
+		email = request.session['email'] if 'email' in request.session else None
 		if not email:
 			print "Error"
 			return HttpResponse("Error")
