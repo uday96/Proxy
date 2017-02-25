@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
-
 from django.db import models
+from .functions import set_password
 import random
 
 # Create your models here.
@@ -16,9 +16,11 @@ class Users(models.Model):
 
     def __str__(self):
         return self.name
-    
-    def set_password(self, raw_password):
-	    algo = 'sha1'
-	    salt = get_hexdigest(algo, str(random.random()), str(random.random()))[:5]
-	    hsh = get_hexdigest(algo, salt, raw_password)
-	    self.password = '%s$%s$%s' % (algo, salt, hsh)
+
+    def save(self, *args, **kwargs):
+    	#print "raw : "+self.password
+    	pwd = self.password
+    	if "sha1$" not in pwd:
+    		self.password = set_password(pwd)
+    	#print "enc : "+self.password
+    	super(Users, self).save(*args, **kwargs)

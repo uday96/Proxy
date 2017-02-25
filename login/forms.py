@@ -7,3 +7,10 @@ class UserAddForm(forms.ModelForm):
     class Meta:
         model = Users
         fields = ('name', 'email', 'password', 'role')
+
+class UserLoginForm(forms.ModelForm):
+    password = forms.CharField(required = False,widget=forms.PasswordInput)
+    newuser = forms.BooleanField(required = False, initial = False)
+    class Meta:
+        model = Users
+        fields = ('email', 'password','newuser')
