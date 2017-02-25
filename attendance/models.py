@@ -10,3 +10,8 @@ class Attendance(models.Model):
     studentID = models.CharField(default='', max_length=100)
     present = models.BooleanField(default=False)
     year = models.IntegerField(default=2017)
+    url = models.CharField(default='', max_length=200)
+    top = models.IntegerField(default=0)
+    left = models.IntegerField(default=0)
+    height = models.IntegerField(default=0)
+    width = models.IntegerField(default=0)
