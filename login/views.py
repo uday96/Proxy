@@ -35,6 +35,9 @@ class LoginHome(View):
 				userob = Users.objects.get(email=mail)
 				if(check_password(password,userob.password)==True):
 					print "Password Match"
+					request.session['email'] = mail
+					if userob.role == "T":
+						return redirect("/prof/homePage/"+mail)			
 					return HttpResponse("Login Successful")
 				print "Password Mismatch"
 				return redirect("/login/")	
@@ -57,14 +60,18 @@ class AddUser(View):
 			print 'valid form'
 			name = form.cleaned_data['name']
 			email = form.cleaned_data['email']
+			ID = form.cleaned_data['ID']
+			deptID = form.cleaned_data['deptID']
 			role = form.cleaned_data['role']
 			password = form.cleaned_data['password']
-
+			print "role : "+role
 			try:
 				print "Adding User"
 				user = Users.objects.create(
 					name = name,
 					email = email,
+					ID = ID,
+					deptID = deptID,
 					role = role,
 					password = password,
 				)

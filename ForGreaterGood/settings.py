@@ -56,6 +56,7 @@ LOCAL_APPS = (
     'login',
     'photo',
     'prof',
+    'student',
 )
 
 INSTALLED_APPS = THIRD_PARTY_APPS + DEFAULT_APPS + LOCAL_APPS
