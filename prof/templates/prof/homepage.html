@@ -28,10 +28,22 @@
 			    <p>No Courses</p>
 			{% endif %}
 			{% csrf_token %}
+		</div>
+		<div class="panel-body">
 			<form action="/prof/addCourse/">
 			    <button type="submit" class="btn btn-primary">Add Course</button>
 			</form>
 		</div>
+		<div class="panel-body">
+			<form action="/prof/viewallqueries/">
+			    <button type="submit" class="btn btn-primary">View Queries</button>
+			</form>
+    	</div>
+    	<div class="panel-body">
+			<form action="/prof/updateattendance/">
+			    <button type="submit" class="btn btn-primary">Update Attendance</button>
+			</form>
+    	</div>
 	</div>
   </body>
 </html>
