@@ -24,6 +24,29 @@
 			    <button type="submit" class="btn btn-primary">View Queries</button>
 			</form>
 	    </div>
+
+	    <div class="panel-body">
+			<form action="/photo/upload/">
+			    <button type="submit" class="btn btn-primary">Upload Photo</button>
+			</form>
+	    </div>
+
+
+	    <div class="panel-body">
+			<h2>Courses</h2>
+			{% if course_list %}
+			    <ul>
+			    {% for course in course_list %}
+			        <li><a href="/attendance/history/{{ course.course_id }},{{ student.ID }},{{course.year}}/">{{ course.course_id }}</a></li>
+			        <!-- <p>{{ course.name }}</p> -->
+			    {% endfor %}
+			    </ul>
+			{% else %}
+			    <p>No Courses</p>
+			{% endif %}
+			{% csrf_token %}
+			
+		</div>
 	</div>
   </body>
 </html>

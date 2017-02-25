@@ -30,6 +30,8 @@ class CourseGroup(models.Model):
 	person_group_id = models.CharField(max_length=128)
 	student_id = models.CharField(max_length=50)
 	person_id = models.CharField(max_length=128)
+	course_id = models.CharField(max_length=50,default="")
+	year = models.IntegerField(default=2017)
 
 	def __str__(self):
 		return self.person_id

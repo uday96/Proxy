@@ -4,6 +4,7 @@ from login.models import Users
 from django.http import HttpResponse
 from .forms import RaiseQueryForm
 from .models import Queries
+from photo.models import CourseGroup
 
 # Create your views here.
 class StudentHome(View):
@@ -18,8 +19,9 @@ class StudentHome(View):
 			return HttpResponse("Error")
 		
 		student = Users.objects.get(email=email,role="S")
+		courselist = CourseGroup.objects.filter(student_id = Users.ID)
 		try:
-			context = {'student' : student}
+			context = {'student' : student,'course_list':courselist}
 			print context
 			return render(request,self.template_name,context)
 		except:
