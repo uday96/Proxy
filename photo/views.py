@@ -14,6 +14,8 @@ from django.contrib import messages
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from microsoft import add_person_image
+from login.models import Users
 # Create your views here.
 
 class UploadPhoto(View):
@@ -26,7 +28,7 @@ class UploadPhoto(View):
 
 	def post(self, request, **kwargs):
 		form = UploadFileForm(request.POST, request.FILES)
-		user_name = "admin"
+		user = "admin"
 		if form.is_valid():
 			print 'valid form'
 			name = request.POST['title']
@@ -37,8 +39,8 @@ class UploadPhoto(View):
 			print instance.pic.url	
 			response = cloudinary.uploader.upload(instance.pic.url)
 			url = response['url']	
-			instance = StudentPhoto(user_name = user_name,url=url)
-			instance.save()
+			student = Users.objects.get(email = user, role = 'S')
+			add_person_image(student.ID,url)
 			# Account creation is successful. Now we need to add the first user
 			# to this account. This user will also be the admin of the account.
 			return HttpResponse("Added Successfully!")
@@ -94,4 +96,6 @@ class UploadClassPhotos(View):
 			return HttpResponse("Invalid Form!")
 
 		return redirect("/login/")
+
+
 
