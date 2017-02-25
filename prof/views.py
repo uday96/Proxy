@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from .models import Course
 from login.models import Users
 from student.models import Queries
+from attendance.models import Attendance
 from .forms import CourseAddForm, StudentAddForm, UpdateAttendanceForm
 from photo.microsoft import create_person,create_person_group
 import datetime
@@ -185,6 +186,22 @@ class UpdateAttendace(View):
             attendance = form.cleaned_data['attendance']
             year = date.year
             print year 
-            return HttpResponse("courseID, date, studentID: " + str(courseID) + "," + str(date) + "," + str(studentID)+","+str(attendance))
+            try:
+                att = Attendance.objects.get(date=date,courseID=courseID,studentID=studentID,year=year)
+                if attendance == "P":
+                    att.present = True
+                else:
+                    att.present = False
+                att.save()
+                print "attendance updated"
+                email = request.session['email'] if 'email' in request.session else None
+                if not email:
+                    print "Error"
+                    return HttpResponse("Error")
+                print email
+                return redirect("/prof/homePage/"+email)
+            except:
+                print "Couldnt retrieve Attendance"
+                return HttpResponse("Error")
         else:
             return HttpResponse("Error")
