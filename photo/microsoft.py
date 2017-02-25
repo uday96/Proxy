@@ -6,8 +6,8 @@ from ForGreaterGood.settings import MICROSOFT_KEY
 import copy
 from attendance.models import Attendance
 
-def create_person_group(prof_id,course_name,year):
-	group_id = str.lower(str(course_name)) + "_" + str(year)
+def create_person_group(prof_id,course_id,year):
+	group_id = str.lower(str(course_id)) + "_" + str(year)
 	url = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/" +group_id
 	headers = {
 			"Content-Type":'application/json',
@@ -15,18 +15,20 @@ def create_person_group(prof_id,course_name,year):
 	}
 
 	data = {
-		"name":course_name,
+		"name":str(course_id),
 		"userData":"This is the group for the course"
 	}
 
-	response = requests.post(url,headers=headers,data = data)
+	response = requests.put(url,headers=headers,data = json.dumps(data))
 	if response.status_code == 200:
 		print "Successfully created"
 	else :
 		print "Error in creating group"
+		print response.json()
 
-def create_person(course_name,year,student_ids):
-	group_id = str.lower(str(course_name)) + "_" + str(year)	
+def create_person(course_id,year,student_ids):
+	group_id = str.lower(str(course_id)) + "_" + str(year)	
+	print group_id
 	url = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/" + group_id +"/persons"
 
 	headers = {
@@ -41,9 +43,9 @@ def create_person(course_name,year,student_ids):
 			name = student.name
 
 			data = {
-			   "name" : name
+			   "name" : str(name)
 			}
-			response = requests.post(url,headers=headers,data = data)
+			response = requests.post(url,headers=headers,data = json.dumps(data))
 
 			resp  = response.json()
 
@@ -55,6 +57,7 @@ def create_person(course_name,year,student_ids):
 				print "person created"
 			else:
 				print "error in creating person"
+				print resp
 		except Exception as e:
 			print str(e)
 
@@ -71,7 +74,7 @@ def add_person_image(student_id,img_url):
 
 		url = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+p.person_group_id+"/persons/"+p.person_id+"/persistedFaces"
 		data = {"url":img_url}
-		resp = requests.post(url,headers = headers,data = data)
+		resp = requests.post(url,headers = headers,data = json.dumps(data))
 
 		if resp.status_code == 200:
 			print "face added for " + p.person_group_id
@@ -83,8 +86,8 @@ def add_person_image(student_id,img_url):
 		else:
 			print "face not added for " + p.person_group_id
 
-def detect_faces(course_name,year,date,img_urls):
-	group_id = str.lower(str(course_name)) + "_" + str(year)
+def detect_faces(course_id,year,date,img_urls):
+	group_id = str.lower(str(course_id)) + "_" + str(year)
 	headers = {
 			"Content-Type":'application/json',
 			"Ocp-Apim-Subscription-Key": MICROSOFT_KEY
@@ -96,8 +99,8 @@ def detect_faces(course_name,year,date,img_urls):
 	all_imgs = {}
 	for img_url in img_urls:
 
-		data1 = {"url":img_url}
-		resp1 = requests.post(url1,headers = headers,data = data1)
+		data1 = {"url":str(img_url)}
+		resp1 = requests.post(url1,headers = headers,data = json.dumps(data1))
 		if resp1.status_code == 200:
 			print "faces detected for " + img_url
 			body = resp1.json()
@@ -110,11 +113,11 @@ def detect_faces(course_name,year,date,img_urls):
 					ids.append(img['faceId'])
 
 				data2 = {
-						"personGroupId" : group_id,
+						"personGroupId" : str(group_id),
 						"faceIds" :ids						
 				}
 
-				resp2 = requests.post(url2,headers = headers,data = data2)
+				resp2 = requests.post(url2,headers = headers,data = json.dumps(data2))
 
 				if resp2.status_code == 200:
 					print "mappings obtained"
@@ -141,10 +144,10 @@ def detect_faces(course_name,year,date,img_urls):
 					rect = all_imgs[m]
 					break
 
-			instance = 	Attendance(courseID=course_name,date=date,studentID=each.student_id,present=True,year=year,url=url,top=rect['top'],left=rect['left'],width=rect['width'],height=rect['height'])
+			instance = 	Attendance(courseID=course_id,date=date,studentID=each.student_id,present=True,year=year,url=url,top=rect['top'],left=rect['left'],width=rect['width'],height=rect['height'])
 			instance.save()
 		else:
-			instance = Attendance(courseID=course_name,date=date,studentID=each.student_id,present=False,year=year)
+			instance = Attendance(courseID=course_id,date=date,studentID=each.student_id,present=False,year=year)
 			instance.save()
 
 
