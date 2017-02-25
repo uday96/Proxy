@@ -4,17 +4,27 @@ from django.http import HttpResponse
 
 from .models import Professor, Course
 
-def index(request):
+def homePage(request, prof_id):
     # return HttpResponse("Hello, world. You're at the prof index page.")
-    prof = Professor.objects.order_by('name')[0]
-    courseList = Course.objects.filter(profID=prof.profID)
-    context = {'course_list': courseList, 'prof' : prof}
-    return render(request, 'prof/homepage.html', context)
+    prof = Professor.objects.get(profID=prof_id)
+    try:
+        courseList = Course.objects.filter(profID=prof.profID)
+        context = {'course_list': courseList, 'prof' : prof}
+        return render(request, 'prof/homepage.html', context)
+    except:
+        print "Error"
+    # context = {'course_list': courseList, 'prof' : prof}
+    # return render(request, 'prof/homepage.html', context)
+    return HttpResponse("Error")
 
 def showCourse(request, course_id):
     # return HttpResponse("Hello, world. You're at the prof index page.")
     course = Course.objects.get(courseID=course_id)
     # courseList = Course.objects.filter(profID=prof.profID)
-    prof = Professor.objects.get(profID=course.profID)
-    context = {'course': course, 'prof' : prof}
-    return render(request, 'prof/coursepage.html', context)
+    try:
+        prof = Professor.objects.get(profID=course.profID)
+        context = {'course': course, 'prof' : prof}
+        return render(request, 'prof/coursepage.html', context)
+    except:
+    	print "Error"
+    return HttpResponse("Error")
