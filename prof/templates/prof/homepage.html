@@ -1,15 +1,37 @@
-<h1>{{ prof.name }}</h1>
-<p>{{ prof.profID }}</p>
-<p>{{ prof.deptID }}</p>
-<p>{{ prof.email }}</p>
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+	</head>
+	<body>
+	<div class="panel-info">
+	    <div class="panel-heading">
+	 		<h1><center>Professor Home Page</center></h1>
 
-{% if course_list %}
-    <ul>
-    {% for course in course_list %}
-        <li><a href="/prof/course/{{ course.courseID }}/">{{ course.name }}</a></li>
-        <!-- <p>{{ course.name }}</p> -->
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No Courses</p>
-{% endif %}
+			<p>Name: <b>{{ prof.name }}</b></p>
+			<p>ID: <b>{{ prof.ID }}</b></p>
+			<p>Department: <b>{{ prof.deptID }}</b></p>
+			<p>EmailID: <b>{{ prof.email }}</b></p>
+		</div>
+
+		<div class="panel-body">
+			<h2>Courses</h2>
+			{% if course_list %}
+			    <ul>
+			    {% for course in course_list %}
+			        <li><a href="/prof/course/{{ course.courseID }}/">{{ course.name }}</a></li>
+			        <!-- <p>{{ course.name }}</p> -->
+			    {% endfor %}
+			    </ul>
+			{% else %}
+			    <p>No Courses</p>
+			{% endif %}
+			{% csrf_token %}
+			<form action="/prof/addCourse/">
+			    <button type="submit" class="btn btn-primary">Add Course</button>
+			</form>
+		</div>
+	</div>
+  </body>
+</html>

@@ -10,14 +10,29 @@ from .functions import check_password
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib import messages
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+def Home(request):
+	print "Home Page!"
+	url = "http://res.cloudinary.com/dryansreb/image/upload/v1488026552/nggo9yfa6qkak1ebg0jz.jpg"
+	# a = cloudinary.CloudinaryImage(url).image(transformation=[
+ #  {"width": 100, "height": 100, "gravity": "face", "radius": "max", "crop": "crop"},
+ #  {"width": 100, "crop": "scale"}
+ #  ])
+ 	a = cloudinary.CloudinaryImage(url).image(width = 300, height = 200, x = 355, y = 410, crop = "crop" )
+	print a
+	return redirect("/login/")
+
 
 class LoginHome(View):
-	template_name = 'add.html'
+	template_name = 'index.html'
 
 	def get(self, request):
 		print 'Login get'
 		form = UserLoginForm()
-		return render(request,self.template_name,{'form' : form })
+		return render(request,self.template_name,{'header' : "Login",'form' : form })
 
 	def post(self, request, **kwargs):
 		print 'Login post'
@@ -35,13 +50,18 @@ class LoginHome(View):
 				userob = Users.objects.get(email=mail)
 				if(check_password(password,userob.password)==True):
 					print "Password Match"
+					request.session['email'] = mail
+					if userob.role == "T":
+						return redirect("/prof/homePage/"+mail)	
+					else:
+						return redirect("/student/studenthome?mail="+mail)		
 					return HttpResponse("Login Successful")
 				print "Password Mismatch"
 				return redirect("/login/")	
 			
 
 class AddUser(View):
-	template_name = 'add.html'
+	template_name = 'index.html'
 
 	def get(self, request):
 		print 'Add an account'
@@ -49,7 +69,7 @@ class AddUser(View):
 		if(request.GET['mail'] != None):
 			mail = request.GET['mail']
 		form = UserAddForm(initial={'email' : mail})
-		return render(request,self.template_name,{'form' : form })
+		return render(request,self.template_name,{'header' : "Add User",'form' : form })
 
 	def post(self, request, **kwargs):
 		form = UserAddForm(request.POST)
@@ -57,14 +77,18 @@ class AddUser(View):
 			print 'valid form'
 			name = form.cleaned_data['name']
 			email = form.cleaned_data['email']
+			ID = form.cleaned_data['ID']
+			deptID = form.cleaned_data['deptID']
 			role = form.cleaned_data['role']
 			password = form.cleaned_data['password']
-
+			print "role : "+role
 			try:
 				print "Adding User"
 				user = Users.objects.create(
 					name = name,
 					email = email,
+					ID = ID,
+					deptID = deptID,
 					role = role,
 					password = password,
 				)

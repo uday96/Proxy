@@ -56,6 +56,7 @@ LOCAL_APPS = (
     'login',
     'photo',
     'prof',
+    'student',
 )
 
 INSTALLED_APPS = THIRD_PARTY_APPS + DEFAULT_APPS + LOCAL_APPS
@@ -143,3 +144,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
