@@ -34,7 +34,7 @@ SECRET_KEY = '1^u177!zq=!e2#()29tv%4i9#bef^0argn=7$qga+%b(xs(s_q'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+MICROSOFT_KEY = 'a490e3ca757047c98ebfe741eceeca24'
 
 # Application definition
 
