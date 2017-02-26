@@ -6,8 +6,12 @@ from django.views.generic.edit import UpdateView, DeleteView
 from django.http import HttpResponse
 from .models import Course
 from login.models import Users
+from photo.models import CourseGroup
 from .forms import CourseAddForm, StudentAddForm
 from photo.microsoft import create_person,create_person_group
+from pymsgbox import *
+
+
 # Create your views here.
 
 class AddCourse(View):
@@ -30,8 +34,9 @@ class AddCourse(View):
             profEmail = request.session['email']
             prof = Users.objects.get(email=profEmail)
             create_person_group(profEmail,name,year)
-            
-            alert('Success')
+            instance = Course(courseID=courseID, year=year, deptID=prof.deptID, name=name, room=room, profID=prof.ID)
+            instance.save()
+            alert(text='', title='', button='OK')
             try:
                 courseList = Course.objects.filter(profID=prof.ID)
                 context = {'course_list': courseList, 'prof' : prof}
@@ -62,12 +67,14 @@ class AddStudents(View):
             studentIDs = str(form.cleaned_data['studentIDs']).split(',')
             [course_id, year] = str(course_info).split(',')
             create_person(course_id,year,studentIDs)
-            alert('Success')
+            # alert('Success')
+            alert(text='', title='', button='OK')
             # print request.POST
             # Call the function to create PersonGroup Microsoft API
             course = Course.objects.get(courseID=course_id, year=year)
+            studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(course_id))+"_"+str(year)))
             try:
-                context = {'course': course, 'prof' : prof}
+                context = {'course': course, 'prof' : prof, 'studentList' : studentList}
                 return render(request, 'prof/coursepage.html', context)
             except:
                 print "Error"
@@ -95,11 +102,12 @@ def showCourse(request, course_info):
     # print course_id
     [course_id, year] = str(course_info).split(',')
     course = Course.objects.get(courseID=course_id, year=year)
+    studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(course_id))+"_"+str(year)))
     # print course.profID
     # courseList = Course.objects.filter(profID=prof.profID)
     try:
         prof = Users.objects.get(ID=course.profID)
-        context = {'course': course, 'prof' : prof}
+        context = {'course': course, 'prof' : prof, 'studentList' : studentList}
         # print context
         return render(request, 'prof/coursepage.html', context)
     except:

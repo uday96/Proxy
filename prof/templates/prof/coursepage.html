@@ -17,6 +17,18 @@
 	      
 	    </div>
 	    <div class="panel-body">
+			<h2>Students Enrolled</h2>
+			{% if studentList %}
+			    <ul>
+			    {% for student in studentList %}
+			        <!-- <li><a href="/prof/course/{{ course.courseID }},{{ course.year }}/">{{ course.name }}</a></li> -->
+			        <li>{{ student.student_id }}</li>
+			        <!-- <p>{{ course.name }}</p> -->
+			    {% endfor %}
+			    </ul>
+			{% else %}
+			    <p>No Students</p>
+			{% endif %}
 	    	{% csrf_token %}
 	    	<form action="/prof/addStudents/{{ course.courseID }},{{ course.year }}/">
 			    <button type="submit" class="btn btn-primary">Add Students</button>
