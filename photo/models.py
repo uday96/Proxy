@@ -39,6 +39,7 @@ class CourseGroup(models.Model):
 class PersonPhoto(models.Model):
 	person_id = models.CharField(max_length=128)
 	persisted_id  = models.CharField(max_length=128)
+	url = models.CharField(max_length=200,default="")
 
 	def __str__(self):
 		return self.persisted_id

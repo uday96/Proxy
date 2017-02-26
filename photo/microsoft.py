@@ -52,7 +52,7 @@ def create_person(course_id,year,student_ids):
 
 			if response.status_code == 200:
 				person_id = resp['personId']
-				person = CourseGroup(person_group_id = group_id,student_id=student_id,person_id = person_id)
+				person = CourseGroup(person_group_id = group_id,student_id=student_id,person_id = person_id,course_id=course_id,year=year)
 				person.save()
 				print "person created"
 			else:
@@ -62,7 +62,8 @@ def create_person(course_id,year,student_ids):
 			print str(e)
 
 def add_person_image(student_id,img_url):
-	persons = PersonPhoto.objects.all(student_id = student_id)
+	print img_url
+	persons = CourseGroup.objects.filter(student_id = student_id)
 	
 
 	headers = {
@@ -73,18 +74,19 @@ def add_person_image(student_id,img_url):
 	for p in persons:
 
 		url = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+p.person_group_id+"/persons/"+p.person_id+"/persistedFaces"
-		data = {"url":img_url}
+		data = {"url":str(img_url)}
 		resp = requests.post(url,headers = headers,data = json.dumps(data))
 
 		if resp.status_code == 200:
 			print "face added for " + p.person_group_id
 			body = resp.json()
 			per_id = body['persistedFaceId']
-			ins = PersonPhoto(person_id = person_id,persisted_id = per_id,url = img_url)
+			ins = PersonPhoto(person_id = p.person_id,persisted_id = per_id,url = img_url)
 			ins.save() 
 			print "saved in db for " + per_id
 		else:
 			print "face not added for " + p.person_group_id
+			print resp.json()
 
 def detect_faces(course_id,year,date,img_urls):
 	group_id = str.lower(str(course_id)) + "_" + str(year)

@@ -69,7 +69,7 @@ class AddStudents(View):
             [course_id, year] = str(course_info).split(',')
             create_person(course_id,year,studentIDs)
             # alert('Success')
-            alert(text='', title='', button='OK')
+            # alert(text='', title='', button='OK')
             # print request.POST
             # Call the function to create PersonGroup Microsoft API
             course = Course.objects.get(courseID=course_id, year=year)
