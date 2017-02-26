@@ -20,7 +20,7 @@
 			{% if course_list %}
 			    <ul>
 			    {% for course in course_list %}
-			        <li><a href="/prof/course/{{ course.courseID }}/">{{ course.name }}</a></li>
+			        <li><a href="/prof/course/{{ course.courseID }},{{ course.year }}/">{{ course.name }}</a></li>
 			        <!-- <p>{{ course.name }}</p> -->
 			    {% endfor %}
 			    </ul>

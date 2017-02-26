@@ -18,7 +18,7 @@
 	    </div>
 	    <div class="panel-body">
 	    	{% csrf_token %}
-	    	<form action="/prof/addStudents/{{ course.courseID }}/">
+	    	<form action="/prof/addStudents/{{ course.courseID }},{{ course.year }}/">
 			    <button type="submit" class="btn btn-primary">Add Students</button>
 			</form>
 	    </div>
