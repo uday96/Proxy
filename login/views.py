@@ -13,6 +13,7 @@ from django.contrib import messages
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from pymsgbox import *
 
 def Home(request):
 	print "Home Page!"
@@ -101,7 +102,7 @@ class AddUser(View):
 					password = password,
 				)
 				user.save()
-
+				alert(text='User Created Successfully!', title='Status', button='OK')
 			except IntegrityError:
 				messages.errors = "User already Exists"
 				messages.error(request, 'User already Exists')
