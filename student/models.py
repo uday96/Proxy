@@ -12,4 +12,4 @@ class Queries(models.Model):
 	resolved = models.BooleanField(default=False)
 
 	def __str__(self):
-		return self.studentID+"||"+self.courseID+"||"+str(self.date)
+		return self.studentID+"_"+self.courseID+"_"+str(self.date)

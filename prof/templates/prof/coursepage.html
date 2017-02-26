@@ -7,6 +7,12 @@
   <body>
     <div class="panel-info">
 	    <div class="panel-heading">
+	    	<div class="container" align="right">
+		    	<form action="/prof/homePage/ignore">
+				    <button type="submit" class="btn btn-primary">Home</button>
+				</form>
+			</div>
+			
 	    	<h1><center>Course Details</center></h1>
 
 			<p>Name: {{ course.name }}</p>
@@ -30,10 +36,11 @@
 	    	{% csrf_token %}
 	    	<form action="/prof/addStudents/{{ course.courseID }},{{ course.year }}/">
 			    <button type="submit" class="btn btn-primary">Add Students</button>
-			</form>
-			
-	    </div>
-	    	<form action="/prof/uploadPhoto/{{ course.courseID }},{{ course.year }}/">
+			</form>		
+	    
+		</div>
+		<div class="panel-body">
+			<form action="/prof/uploadPhoto/{{ course.courseID }},{{ course.year }}/">
 			    <button type="submit" class="btn btn-primary">Upload class photo</button>
 			</form>
 	</div>

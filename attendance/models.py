@@ -15,3 +15,6 @@ class Attendance(models.Model):
     left = models.IntegerField(default=0)
     height = models.IntegerField(default=0)
     width = models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.date)+"_"+self.courseID+"_"+self.studentID

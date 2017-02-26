@@ -11,3 +11,6 @@ class Course(models.Model):
 	room = models.CharField(max_length=100)
 	year = models.IntegerField(default=2017)
 	profID = models.CharField(max_length=100)
+
+	def __str__(self):
+		return self.courseID+"_"+str(self.year)

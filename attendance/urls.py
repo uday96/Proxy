@@ -8,4 +8,5 @@ urlpatterns = [
     # url(r'^addCourse/$',views.AddCourse.as_view(),name='addCourse'),
     # url(r'^addStudents/(?P<course_id>[A-Za-z0-9]+)/$',views.AddStudents.as_view(),name='addStudents'),
     url(r'^history/(?P<info>[A-Za-z0-9,]+)/$',views.history,name='history'),
+    url(r'^showImage/(?P<attID>[A-Za-z0-9]+)/$',views.showImage,name='showImage'),
 ]
