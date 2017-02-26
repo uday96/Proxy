@@ -21,9 +21,7 @@
 			{% if studentList %}
 			    <ul>
 			    {% for student in studentList %}
-			        <!-- <li><a href="/prof/course/{{ course.courseID }},{{ course.year }}/">{{ course.name }}</a></li> -->
-			        <li>{{ student.student_id }}</li>
-			        <!-- <p>{{ course.name }}</p> -->
+			        <li><a href="/attendance/history/{{course.courseID}},{{ student.student_id }},{{course.year}}">{{ student.student_id }}</a></li>
 			    {% endfor %}
 			    </ul>
 			{% else %}
