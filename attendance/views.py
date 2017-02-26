@@ -22,3 +22,12 @@ def history(request, info):
     # context = {'course_list': courseList, 'prof' : prof}
     # return render(request, 'prof/homepage.html', context)
     return HttpResponse("Error")
+
+def showImage(request, attID):
+    try:
+        attendance = Attendance.objects.get(id=attID)
+        context = {'attendance' : attendance}
+        return render(request, 'attendance/showImage.html', context)
+    except:
+        print "Error"
+    return HttpResponse("Error")

@@ -11,10 +11,11 @@
 		<p>CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>StudentID: <b>{{ studentID }}</b></p>
       </div>
       <div class="panel-body">
-          	<table style="width: 50%">
+          	<table style="width: 100%">
 				<tr>
 				    <th><b><u>Date</u></b></th>
 				    <th><b><u>Present</u></b></th>
+				    <th><b><u>Image Url</u></b></th>
 				</tr>
 
 				{% if attendance_list %}
@@ -22,6 +23,11 @@
 				    <tr>
 				        <td>{{att.date|date:"M d, Y"}}</td>
 				        <td>{{att.present}}</td>
+				        {% if att.present %}
+				        <td><a href="/attendance/showImage/{{att.id}}">Click Here</a></td>
+				        {% else %}
+				        <td>No Link</td>
+				    	{% endif %}
 				    </tr>
 				    {% endfor %}    
 				{% else %}
