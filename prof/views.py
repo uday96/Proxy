@@ -33,7 +33,7 @@ class AddCourse(View):
             room = form.cleaned_data['room']
             profEmail = request.session['email']
             prof = Users.objects.get(email=profEmail)
-            create_person_group(profEmail,name,year)
+            create_person_group(profEmail,courseID,year)
             instance = Course(courseID=courseID, year=year, deptID=prof.deptID, name=name, room=room, profID=prof.ID)
             instance.save()
             alert(text='', title='', button='OK')
