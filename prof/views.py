@@ -88,7 +88,11 @@ class AddStudents(View):
 
 def homePage(request, email_id):
     # return HttpResponse("Hello, world. You're at the prof index page.")
-    prof = Users.objects.get(email=email_id)
+    email = request.session['email'] if 'email' in request.session else email_id
+    if not email:
+            print "Error"
+            return HttpResponse("Error")
+    prof = Users.objects.get(email=email)
     try:
         courseList = Course.objects.filter(profID=prof.ID)
         context = {'course_list': courseList, 'prof' : prof}

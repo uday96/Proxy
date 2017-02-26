@@ -26,6 +26,14 @@ def Home(request):
 	return redirect("/login/")
 
 
+class Logout(View):
+
+	def get(self,request):
+		if 'email' in request.session:
+			del request.session['email']
+			request.session.modified = True
+		return redirect("/login/")
+
 class LoginHome(View):
 	template_name = 'index.html'
 

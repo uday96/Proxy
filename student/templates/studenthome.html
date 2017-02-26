@@ -7,7 +7,11 @@
   <body>
     <div class="panel-info">
 	    <div class="panel-heading">
-	    	{% csrf_token %}
+	    	<div class="container" align="right">
+		    	<form action="/login/logout/">
+				    <button type="submit" class="btn btn-primary">LogOut</button>
+				</form>
+			</div>
 	    	<h1><center>Student Home Page</center></h1>  
 	    	<p>Name : <b>{{ student.name }}</b></p>
 			<p>ID : <b>{{ student.ID }}</b></p>
