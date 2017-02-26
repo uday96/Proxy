@@ -68,14 +68,17 @@ def add_person_image(student_id,img_url):
 
 	headers = {
 			"Content-Type":'application/json',
-			"Ocp-Apim-Subscription-Key": MICROSOFT_KEY
-		}		
+			"Ocp-Apim-Subscription-Key": MICROSOFT_KEY,
+			
+    }
+				
 
 	for p in persons:
 
 		url = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+p.person_group_id+"/persons/"+p.person_id+"/persistedFaces"
+		print url
 		data = {"url":str(img_url)}
-		resp = requests.post(url,headers = headers,data = json.dumps(data))
+		resp = requests.request("POST", url, data=json.dumps(data), headers=headers)
 
 		if resp.status_code == 200:
 			print "face added for " + p.person_group_id
@@ -87,6 +90,17 @@ def add_person_image(student_id,img_url):
 		else:
 			print "face not added for " + p.person_group_id
 			print resp.json()
+
+		url1 = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+p.person_group_id+"/train"
+		body1 = {}
+		resp1 = requests.request("POST", url1,data = json.dumps(body1) , headers=headers)
+		if resp1.status_code == 200:
+			print "Successfully put for training"
+		else:
+			print "unable to train"
+			print resp1.json()
+
+
 
 def detect_faces(course_id,year,date,img_urls):
 	group_id = str.lower(str(course_id)) + "_" + str(year)
