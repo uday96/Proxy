@@ -4,9 +4,10 @@ from login.models import Users
 import json
 from ForGreaterGood.settings import MICROSOFT_KEY
 import copy
+from attendance.models import Attendance
 
 def create_person_group(prof_id,course_name,year):
-	group_id = str.lower(course_name) + "_" + str(year)
+	group_id = str.lower(str(course_name)) + "_" + str(year)
 	url = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/" +group_id
 	headers = {
 			"Content-Type":'application/json',
@@ -25,7 +26,7 @@ def create_person_group(prof_id,course_name,year):
 		print "Error in creating group"
 
 def create_person(course_name,year,student_ids):
-	group_id = str.lower(course_name) + "_" + str(year)	
+	group_id = str.lower(str(course_name)) + "_" + str(year)	
 	url = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/" + group_id +"/persons"
 
 	headers = {
@@ -82,8 +83,8 @@ def add_person_image(student_id,img_url):
 		else:
 			print "face not added for " + p.person_group_id
 
-def detect_faces(group_id,date,img_urls):
-
+def detect_faces(course_name,year,date,img_urls):
+	group_id = str.lower(str(course_name)) + "_" + str(year)
 	headers = {
 			"Content-Type":'application/json',
 			"Ocp-Apim-Subscription-Key": MICROSOFT_KEY
@@ -92,6 +93,7 @@ def detect_faces(group_id,date,img_urls):
 	url1 = "https://westus.api.cognitive.microsoft.com/face/v1.0/detect"
 	url2 = "https://westus.api.cognitive.microsoft.com/face/v1.0/identify"
 	mappings = {}
+	all_imgs = {}
 	for img_url in img_urls:
 
 		data1 = {"url":img_url}
@@ -104,6 +106,7 @@ def detect_faces(group_id,date,img_urls):
 				ids = []
 				imgs = copy.copy(body[n:n+10])
 				for img in imgs:
+					all_imgs[img['faceId']] = img['faceRectangle']
 					ids.append(img['faceId'])
 
 				data2 = {
@@ -125,6 +128,27 @@ def detect_faces(group_id,date,img_urls):
 
 		else:
 			print "faces not detected for " + img_url
+
+	people = mappings.values()
+	faces = mappings.keys()
+	
+	students = CourseGroup.objects.all(person_group_id = group_id)
+	for each in students:
+		person_id = each.person_id
+		if person_id in people:			
+			for m in faces:
+				if mappings[m] == person_id:
+					rect = all_imgs[m]
+					break
+
+			instance = 	Attendance(courseID=course_name,date=date,studentID=each.student_id,present=True,year=year,url=url,top=rect['top'],left=rect['left'],width=rect['width'],height=rect['height'])
+			instance.save()
+		else:
+			instance = Attendance(courseID=course_name,date=date,studentID=each.student_id,present=False,year=year)
+			instance.save()
+
+
+
 
 					
 

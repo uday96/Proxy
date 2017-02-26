@@ -14,7 +14,7 @@ from django.contrib import messages
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-from microsoft import add_person_image
+from microsoft import add_person_image,detect_faces
 from login.models import Users
 # Create your views here.
 
@@ -67,7 +67,7 @@ class UploadClassPhotos(View):
 
 	def post(self, request,course_info, **kwargs):
 		form = ClassPhotoForm(request.POST, request.FILES)
-		info = course_info.split(",")
+		info = str(course_info).split(",")
 		course_name = str.lower(info[0]) + "_" + str(info[1])
 		if form.is_valid():
 			print 'valid form'
@@ -84,6 +84,8 @@ class UploadClassPhotos(View):
 
 			instance = ClassPhoto(course = course_name,date = date, url = url)
 			instance.save()	
+
+			detect_faces(info[0],info[1],date,[url])
 
 			# Account creation is successful. Now we need to add the first user
 			# to this account. This user will also be the admin of the account.
