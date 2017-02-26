@@ -19,7 +19,8 @@ class StudentHome(View):
 			return HttpResponse("Error")
 		
 		student = Users.objects.get(email=email,role="S")
-		courselist = CourseGroup.objects.filter(student_id = Users.ID)
+		courselist = CourseGroup.objects.filter(student_id = student.ID)
+		print courselist
 		try:
 			context = {'student' : student,'course_list':courselist}
 			print context
