@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from .forms import RaiseQueryForm
 from .models import Queries
 from photo.models import CourseGroup
+from pymsgbox import *
 
 # Create your views here.
 class StudentHome(View):
@@ -55,6 +56,7 @@ class RaiseQuery(View):
 				queryraised = Queries.objects.create(studentID=studentID,courseID=courseID,query=query)
 				print queryraised.date
 				queryraised.save()
+				alert(text='Query Raised Successfully!', title='Status', button='OK')
 				return redirect("/student/studenthome/")
 			except:
 				print "Error"
