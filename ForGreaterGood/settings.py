@@ -15,9 +15,9 @@ import cloudinary
 
 
 cloudinary.config( 
-  cloud_name = "dryansreb", 
-  api_key = "748684929515822", 
-  api_secret = "3Y1jY3Sf2jpIdW596b-ty0g2o90" 
+  cloud_name = "proxy", 
+  api_key = "665735635866495", 
+  api_secret = "HVm9UboNA5Gjk4gtnQ1teePuf34" 
 )
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
