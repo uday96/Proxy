@@ -88,7 +88,7 @@ class UploadClassPhotos(View):
             print instance.pic.url 
             foo = Image.open(instance.pic.url) 
             (a,b) =  foo.size  
-            foo = foo.resize((a/7,b/7),Image.ANTIALIAS)
+            foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
             foo.save(instance.pic.url)
             response = cloudinary.uploader.upload(instance.pic.url)   
             response = cloudinary.uploader.upload(instance.pic.url)

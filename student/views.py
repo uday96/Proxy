@@ -56,7 +56,7 @@ class RaiseQuery(View):
 				queryraised = Queries.objects.create(studentID=studentID,courseID=courseID,query=query)
 				print queryraised.date
 				queryraised.save()
-				alert(text='Query Raised Successfully!', title='Status', button='OK')
+				#alert(text='Query Raised Successfully!', title='Status', button='OK')
 				return redirect("/student/studenthome/")
 			except:
 				print "Error"

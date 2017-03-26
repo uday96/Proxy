@@ -38,7 +38,7 @@ class AddCourse(View):
             create_person_group(profEmail,courseID,year)
             instance = Course(courseID=courseID, year=year, deptID=prof.deptID, name=name, room=room, profID=prof.ID)
             instance.save()
-            alert(text='Course Created Successfully!', title='Status', button='OK')
+            #alert(text='Course Created Successfully!', title='Status', button='OK')
             try:
                 courseList = Course.objects.filter(profID=prof.ID)
                 context = {'course_list': courseList, 'prof' : prof}
@@ -165,7 +165,7 @@ class ResolveQuery(View):
             queryob.resolved = True
             queryob.save()
             print query+" resolved"
-            alert(text='Query Resolved Successfully!', title='Status', button='OK')
+            #alert(text='Query Resolved Successfully!', title='Status', button='OK')
             return redirect("/prof/viewallqueries/")
         except:
             print "error"
@@ -199,7 +199,7 @@ class UpdateAttendace(View):
                     att.present = False
                 att.save()
                 print "attendance updated"
-                alert(text='Attendance Updated Successfully!', title='Status', button='OK')
+                #alert(text='Attendance Updated Successfully!', title='Status', button='OK')
                 email = request.session['email'] if 'email' in request.session else None
                 if not email:
                     print "Error"

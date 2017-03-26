@@ -17,13 +17,6 @@ from pymsgbox import *
 
 def Home(request):
 	print "Home Page!"
-	url = "http://res.cloudinary.com/dryansreb/image/upload/v1488026552/nggo9yfa6qkak1ebg0jz.jpg"
-	# a = cloudinary.CloudinaryImage(url).image(transformation=[
- #  {"width": 100, "height": 100, "gravity": "face", "radius": "max", "crop": "crop"},
- #  {"width": 100, "crop": "scale"}
- #  ])
- 	a = cloudinary.CloudinaryImage(url).image(width = 300, height = 200, x = 355, y = 410, crop = "crop" )
-	print a
 	return redirect("/login/")
 
 
@@ -102,7 +95,7 @@ class AddUser(View):
 					password = password,
 				)
 				user.save()
-				alert(text='User Created Successfully!', title='Status', button='OK')
+				#alert(text='User Created Successfully!', title='Status', button='OK')
 			except IntegrityError:
 				messages.errors = "User already Exists"
 				messages.error(request, 'User already Exists')
