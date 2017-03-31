@@ -1,11 +1,10 @@
 from django.conf.urls import url
-
 from . import views
 from photo.views import UploadClassPhotos
 
 urlpatterns = [
-    url(r'^homePage/(?P<email_id>[A-Za-z0-9@.]+)/$', views.homePage, name='homePage'),
-    url(r'^course/(?P<course_info>[A-Za-z0-9,]+)/$', views.showCourse, name='showCourse'),
+    url(r'^profhome/', views.ProfHome.as_view(), name='profHome'),
+    url(r'^course/', views.showCourse.as_view(), name='showCourse'),
     url(r'^addCourse/$',views.AddCourse.as_view(),name='addCourse'),
     url(r'^updateattendance/$',views.UpdateAttendace.as_view(),name='updateattendance'),
     url(r'^viewallqueries/$',views.ViewAllQueries.as_view(),name='viewqueries_prof'),

@@ -23,6 +23,7 @@ def Home(request):
 class Logout(View):
 
 	def get(self,request):
+		print "Logout get"
 		if 'email' in request.session:
 			del request.session['email']
 			request.session.modified = True
@@ -53,8 +54,9 @@ class LoginHome(View):
 				if(check_password(password,userob.password)==True):
 					print "Password Match"
 					request.session['email'] = mail
+					request.session['role'] = userob.role
 					if userob.role == "T":
-						return redirect("/prof/homePage/"+mail)	
+						return redirect("/prof/profhome?mail="+mail)
 					else:
 						return redirect("/student/studenthome?mail="+mail)		
 					return HttpResponse("Login Successful")

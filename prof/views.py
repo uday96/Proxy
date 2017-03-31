@@ -13,11 +13,31 @@ from photo.microsoft import create_person,create_person_group
 import datetime
 from photo.models import CourseGroup
 from pymsgbox import *
+from django.utils.decorators import method_decorator
+from functools import wraps
 
 # Create your views here.
 
+#Decorator Functions
+def assess_role_prof(view_func):
+    def _decorator(request):
+        if ('email' not in request.session) or ('role' not in request.session):
+            return redirect("/login/logout/")
+        elif request.session.get('role',"")!='T':
+            return redirect("/login/logout/")
+        else:
+            response = view_func(request)
+        return response
+    return wraps(view_func)(_decorator)
+
+
 class AddCourse(View):
-    template_name = 'prof/add.html'
+
+    template_name = 'add.html'
+
+    @method_decorator(assess_role_prof)
+    def dispatch(self, request):
+        return super(AddCourse, self).dispatch(request)
 
     def get(self, request):
         print 'AddCourse get'
@@ -42,7 +62,7 @@ class AddCourse(View):
             try:
                 courseList = Course.objects.filter(profID=prof.ID)
                 context = {'course_list': courseList, 'prof' : prof}
-                return render(request, 'prof/homepage.html', context)
+                return render(request, 'homepage.html', context)
             except:
                 print "Error"
             return HttpResponse("Error")
@@ -52,7 +72,8 @@ class AddCourse(View):
             return HttpResponse("Error")
 
 class AddStudents(View):
-    template_name = 'prof/add.html'
+
+    template_name = 'add.html'
 
     def get(self, request, course_info):
         print 'AddStudents get'
@@ -77,7 +98,7 @@ class AddStudents(View):
             studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(course_id))+"_"+str(year)))
             try:
                 context = {'course': course, 'prof' : prof, 'studentList' : studentList}
-                return render(request, 'prof/coursepage.html', context)
+                return render(request, 'coursepage.html', context)
             except:
                 print "Error"
             return HttpResponse("Error")
@@ -86,48 +107,59 @@ class AddStudents(View):
             return HttpResponse("Error")
             
 
-def homePage(request, email_id):
-    # return HttpResponse("Hello, world. You're at the prof index page.")
-    email = request.session['email'] if 'email' in request.session else email_id
-    if not email:
-            print "Error"
-            return HttpResponse("Error")
-    prof = Users.objects.get(email=email)
-    try:
-        courseList = Course.objects.filter(profID=prof.ID)
-        context = {'course_list': courseList, 'prof' : prof}
-        return render(request, 'prof/homepage.html', context)
-    except:
-        print "Error"
-    # context = {'course_list': courseList, 'prof' : prof}
-    # return render(request, 'prof/homepage.html', context)
-    return HttpResponse("Error")
+class ProfHome(View):
 
-def showCourse(request, course_info):
-    # return HttpResponse("Hello, world. You're at the prof index page.")
-    # print course_id
-    [course_id, year] = str(course_info).split(',')
-    course = Course.objects.get(courseID=course_id, year=year)
-    studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(course_id))+"_"+str(year)))
-    # print course.profID
-    # courseList = Course.objects.filter(profID=prof.profID)
-    try:
-        prof = Users.objects.get(ID=course.profID)
-        context = {'course': course, 'prof' : prof, 'studentList' : studentList}
-        # print context
-        return render(request, 'prof/coursepage.html', context)
-    except:
-        print "Error"
-    return HttpResponse("Error")
+    template_name = 'homepage.html'
+
+    @method_decorator(assess_role_prof)
+    def dispatch(self, request):
+        return super(ProfHome, self).dispatch(request)
+
+    def get(self,request):
+        print "profhome get"
+        email_get = request.GET.get('mail',None)
+        email = request.session.get('email',email_get)
+        if not email:
+                print "Error"
+                return HttpResponse("Error")
+        try:
+            prof = Users.objects.get(email=email,role='T')
+            courseList = Course.objects.filter(profID=prof.ID)
+            context = {'course_list': courseList, 'prof' : prof}
+            return render(request, self.template_name, context)
+        except:
+            print "Error"
+        return HttpResponse("Error")
+
+class showCourse(View):
+
+    template_name = 'coursepage.html'
+
+    def get(self,request):
+        course_id = request.GET.get('courseID',None)
+        year = request.GET.get('year',None)
+        try:
+            course = Course.objects.get(courseID=course_id, year=year)
+            studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(course_id))+"_"+str(year)))
+            prof = Users.objects.get(ID=course.profID)
+            context = {'course': course, 'prof' : prof, 'studentList' : studentList}
+            return render(request, self.template_name, context)
+        except:
+            print "Error"
+        return HttpResponse("Error")
 
 
 class ViewAllQueries(View):
     
-    template_name = "prof/viewallqueries.html"
+    template_name = "viewallqueries.html"
+
+    @method_decorator(assess_role_prof)
+    def dispatch(self, request):
+        return super(ViewAllQueries, self).dispatch(request)
 
     def get(self,request):
         print "viewallqueries get"
-        email = request.session['email'] if 'email' in request.session else None
+        email = request.session.get('email',None)
         if not email:
             print "Error"
             return HttpResponse("Error")
@@ -157,7 +189,6 @@ class ResolveQuery(View):
 
     def get(self,request,query):
         print "resolvequery get"
-        print query
         queryID = int(query)
         print queryID
         try:
@@ -172,7 +203,12 @@ class ResolveQuery(View):
         return HttpResponse("Error")
 
 class UpdateAttendace(View):
-    template_name = 'prof/add.html'
+
+    template_name = 'add.html'
+
+    @method_decorator(assess_role_prof)
+    def dispatch(self, request):
+        return super(UpdateAttendace, self).dispatch(request)
 
     def get(self, request):
         print 'UpdateAttendance get'
@@ -200,12 +236,12 @@ class UpdateAttendace(View):
                 att.save()
                 print "attendance updated"
                 #alert(text='Attendance Updated Successfully!', title='Status', button='OK')
-                email = request.session['email'] if 'email' in request.session else None
+                email = request.session.get('email',None)
                 if not email:
                     print "Error"
                     return HttpResponse("Error")
                 print email
-                return redirect("/prof/homePage/"+email)
+                return redirect("/prof/profhome?mail="+email)
             except:
                 print "Couldnt retrieve Attendance"
                 return HttpResponse("Error")
