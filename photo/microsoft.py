@@ -143,34 +143,35 @@ def detect_faces(course_id,year,date,img_urls):
 						try:
 							mappings[each['faceId']] = each['candidates'][0]['personId']
 						except:
-							mappings[each['faceId']] = ""
+							pass
 				else:
 					print "mappings not obtained"
 					print resp2.json()
 
-				n = n + 10
-
-			people = mappings.values()
-			faces = mappings.keys()
-			
-			students = CourseGroup.objects.filter(person_group_id = group_id)
-			for each in students:
-				person_id = each.person_id
-				if person_id in people:			
-					for m in faces:
-						if mappings[m] == person_id:
-							rect = all_imgs[m]
-							break
-
-					instance = 	Attendance(courseID=course_id,date=date,studentID=each.student_id,present=True,year=year,url=img_urls[0],top=rect['top'],left=rect['left'],width=rect['width'],height=rect['height'])
-					instance.save()
-				else:
-					instance = Attendance(courseID=course_id,date=date,studentID=each.student_id,present=False,year=year)
-					instance.save()
+				n = n + 10			
 
 		else:
 			print "faces not detected for " + img_url
 			print resp1.json()
+
+	people = mappings.values()		
+	people = list(set(people))	
+	faces = mappings.keys()
+	
+	students = CourseGroup.objects.filter(person_group_id = group_id)
+	for each in students:
+		person_id = each.person_id
+		if person_id in people:			
+			for m in faces:
+				if mappings[m] == person_id:
+					rect = all_imgs[m]
+					break
+
+			instance = 	Attendance(courseID=course_id,date=date,studentID=each.student_id,present=True,year=year,url=img_urls[0],top=rect['top'],left=rect['left'],width=rect['width'],height=rect['height'])
+			instance.save()
+		else:
+			instance = Attendance(courseID=course_id,date=date,studentID=each.student_id,present=False,year=year)
+			instance.save()
 
 	
 
