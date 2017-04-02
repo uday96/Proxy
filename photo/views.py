@@ -89,25 +89,27 @@ class UploadClassPhotos(View):
             date = request.POST['date']
             # image = request.FILES['image']
             imageList = request.FILES.getlist('image')
+            urls = []
             image = imageList[0]
             # Add Here =========================================
             # files = request.FILES.getlist('file_field')
-            instance = Photos(name = course, pic= image)
-            instance.save()
-            print "image saved"
-            print instance.pic.url 
-            foo = Image.open(instance.pic.url) 
-            (a,b) =  foo.size  
-            foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
-            foo.save(instance.pic.url)
-            response = cloudinary.uploader.upload(instance.pic.url)   
-            response = cloudinary.uploader.upload(instance.pic.url)
-            url = response['url']
+            for image in imageList:
+                instance = Photos(name = course, pic= image)
+                instance.save()
+                print "image saved"
+                print instance.pic.url 
+                foo = Image.open(instance.pic.url) 
+                (a,b) =  foo.size  
+                foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
+                foo.save(instance.pic.url)
+                response = cloudinary.uploader.upload(instance.pic.url)   
+                #response = cloudinary.uploader.upload(instance.pic.url) # it was there before
+                urls.append(response['url'])
 
-            instance = ClassPhoto(course = group_id,date = date, url = url)
-            instance.save()    
+                instance = ClassPhoto(course = group_id,date = date, url = response['url'])
+                instance.save()    
 
-            detect_faces(info[0],info[1],date,[url])
+            detect_faces(info[0],info[1],date,urls)
             course = Course.objects.get(courseID=info[0], year=info[1])
             prof = Users.objects.get(ID=course.profID)
 
@@ -118,8 +120,8 @@ class UploadClassPhotos(View):
             try:
                 context = {'course': course, 'prof' : prof, 'studentList' : studentList}
                 return render(request, 'prof/coursepage.html', context)
-            except:
-                print "Error"
+            except Exception as e:
+                print str(e.message)
             return HttpResponse("Error")
 
         else:
