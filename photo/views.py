@@ -18,6 +18,10 @@ from microsoft import add_person_image,detect_faces
 from login.models import Users
 from prof.models import Course
 from PIL import Image
+from ForGreaterGood.settings import MICROSOFT_KEY
+import requests
+import json
+import httplib, urllib, base64
 # Create your views here.
 
 class UploadPhoto(View):
@@ -120,7 +124,102 @@ class UploadClassPhotos(View):
 
             return HttpResponse("Invalid Form!")
 
-        
+class DisplayPhotos(View):
+    # return HttpResponse("Hello, world. You're at the prof index page.")
+    # prof = Users.objects.get(email=email_id)
 
+    template_name = "image_display.html"
+
+    def get(self,request):
+        print 'display student photos'
+        student_id = "cs14b025"
+        urls = []
+        ids = []
+        versions = []
+        try:
+            courselist = CourseGroup.objects.filter(student_id=student_id)
+            for course in courselist:
+                images = PersonPhoto.objects.filter(person_id=course.person_id)
+                for image in images:
+                    urls.append(image.url)
+
+            urls = list(set(urls))
+            for url in urls:
+                i = url.split("/")
+                versions.append(i[-2])
+                ids.append(i[-1])
+
+            data = zip(versions,ids) 
+            context = {'studentID' : student_id , 'data' : data}
+            print context
+            return render(request, self.template_name, context)
+            print "here"
+
+        except Exception as e:
+            print str(e.message)
+            print "error1"
+
+        return HttpResponse("Error1")
+
+
+def DeletePhoto(request,info):
+    print 'deleting student photo'
+    data = info.split(",")
+    version = data[0]
+    img_id = data[1]
+
+    url = "http://res.cloudinary.com/proxy/image/upload/"+version+"/"+img_id
+    endpoint = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"
+
+    headers = {
+            "Content-Type":'application/json',
+            "Ocp-Apim-Subscription-Key": MICROSOFT_KEY,
+    }
+
+    endpoint1 = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"
+    try:
+        persons = PersonPhoto.objects.filter(url = url)
+        for person in persons:
+            print person.person_id
+            course = CourseGroup.objects.get(person_id=person.person_id)
+            api_url = course.person_group_id+"/persons/"+person.person_id+"/persistedFaces/"+person.persisted_id            
+            # print api_url
+            # response = requests.request("DELETE",url,data="random",headers=headers)
+            
+            params = urllib.urlencode({})
+          
+            try:
+                conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
+                conn.request("DELETE", "/face/v1.0/persongroups/"+api_url+"?%s" % params, "{body}", headers)
+                response = conn.getresponse()
+               
+                data = response.read()              
+                conn.close()
+                print response.status                
+                if response.status == 200:
+                    print "Successfully deleted from " + course.course_id
+                    PersonPhoto.objects.filter(persisted_id=person.persisted_id).delete()
+
+                    url1 = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+course.person_group_id+"/train"
+                    resp1 = requests.request("POST", url1,data = json.dumps({}) , headers=headers)
+                    if resp1.status_code == 202:
+                        print "Successfully put for training"
+                    else:
+                        print "unable to train"
+                        print resp1.json()
+                else :
+                        print response.status
+                        print "Error in deleting from " + course.course_id                    
+                        print "done"        
+                        
+            except Exception as e:
+                print str(e.message)
+
+
+    except Exception as e:
+        print str(e.message)
+        print "Error"
+
+    return redirect('/student/myphotos')
 
 
