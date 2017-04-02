@@ -4,7 +4,7 @@ import datetime
 
 class UploadFileForm(forms.Form):
 	title = forms.CharField(max_length=50)
-	image = forms.ImageField()
+	image = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
 
 class ClassPhotoForm(forms.Form):
 	course = forms.CharField(max_length=50)

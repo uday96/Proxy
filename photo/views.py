@@ -38,20 +38,23 @@ class UploadPhoto(View):
         if form.is_valid():
             print 'valid form'
             name = request.POST['title']
-            image = request.FILES['image']
-            instance = Photos(name = name, pic= image)
-            instance.save()
-            print "image saved"
-            foo = Image.open(instance.pic.url) 
-            (a,b) =  foo.size  
-            foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
-            foo.save(instance.pic.url)
-            response = cloudinary.uploader.upload(instance.pic.url)
-            url = response['url']    
-            print url
-            student = Users.objects.get(email = user, role = 'S')
+            imageList = request.FILES.getlist('image')
+            i = 0
+            for image in imageList:
+                instance = Photos(name = (str(name) + str(i)), pic= image)
+                instance.save()
+                print "image saved"
+                foo = Image.open(instance.pic.url) 
+                (a,b) =  foo.size  
+                foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
+                foo.save(instance.pic.url)
+                response = cloudinary.uploader.upload(instance.pic.url)
+                url = response['url']    
+                print url
+                student = Users.objects.get(email = user, role = 'S')
 
-            add_person_image(student.ID,url)
+                add_person_image(student.ID,url)
+                i += 1
             # Account creation is successful. Now we need to add the first user
             # to this account. This user will also be the admin of the account.
             return redirect("/student/studenthome/")
@@ -84,7 +87,10 @@ class UploadClassPhotos(View):
             print 'valid form'
             course = request.POST['course']
             date = request.POST['date']
-            image = request.FILES['image']
+            # image = request.FILES['image']
+            imageList = request.FILES.getlist('image')
+            image = imageList[0]
+            # Add Here =========================================
             # files = request.FILES.getlist('file_field')
             instance = Photos(name = course, pic= image)
             instance.save()

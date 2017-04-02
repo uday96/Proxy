@@ -1,0 +1,42 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+		table, th, td {
+		    border: 1px solid black;
+		    border-collapse: collapse;
+		}
+		th, td {
+		    padding: 5px;
+		    text-align: left;
+		}
+	</style>
+  </head>
+  <body>
+    <div class="panel-info">
+      <div class="panel-heading">
+        <h1><center>Attendance Summary</center></h1>
+		<p>CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>Classes Taken: <b>{{ summary.classes }}</b></p>
+      </div>
+      <div class="panel-body">
+      		<table>
+				<caption><b>Summary<b></caption>          	
+				<tr>
+					<th><b><u>Date</u></b></th>
+				    <th><b><u>Present</u></b></th>
+				    <th><b><u>Absent</u></b></th>
+				</tr>
+				{% for datewiseatt in summary.datewise %}
+				    <tr>
+				        <td>{{datewiseatt.date}}</td>
+				        <td>{{datewiseatt.count_present}}</td>
+				        <td>{{datewiseatt.count_absent}}</td>
+				    </tr>
+				{% endfor %}
+			</table>
+      </div>
+    </div>
+  </body>
+</html>
