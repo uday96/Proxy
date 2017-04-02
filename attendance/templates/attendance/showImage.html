@@ -1,3 +1,44 @@
-<div style="overflow:hidden;width:{{attendance.width}}px;height:{{attendance.height}}px;top:45%;left:45%;position: absolute;">
+<!-- <div style="overflow:hidden;width:{{attendance.width}}px;height:{{attendance.height}}px;top:45%;left:45%;position: absolute;">
 <img src="{{attendance.url}}" style="position:relative;top:-{{attendance.top}}px;left:-{{attendance.left}}px;">
+</div> -->
+
+<html>
+<head>
+<style>
+
+div.transbox {
+  position:absolute;
+  background-color: #ffffff;
+  border: 3px solid black;
+  opacity: 0.3;
+  filter: alpha(opacity=30); /* For IE8 and earlier */
+}
+
+</style>
+
+<script>
+var img = new Image();
+
+img.onload = function(){
+	var height = img.height;
+	var width = img.width;
+	var scale1 = 200/height;
+	var scale2 = 200/width;
+	document.getElementById("tagId").style.top = parseInt({{attendance.top}}*scale1);
+	document.getElementById("tagId").style.height = parseInt({{attendance.height}}*scale1);
+	document.getElementById("tagId").style.left = parseInt({{attendance.left}}*scale2);
+	document.getElementById("tagId").style.width = parseInt({{attendance.width}}*scale2);
+}
+
+img.src = "{{attendance.url}}";
+</script>
+</head>
+<body>
+
+<div id = "imgDivId" style="position: relative; background: url({{attendance.url}}); background-size: 200px 200px; width: 200px; height: 200px; background-repeat: no-repeat;">
+<div class="transbox" id = "tagId">
 </div>
+</div>
+
+</body>
+</html>
