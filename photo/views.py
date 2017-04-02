@@ -120,7 +120,46 @@ class UploadClassPhotos(View):
 
             return HttpResponse("Invalid Form!")
 
-        
+
+class ChangeProfilePic(View):
+
+    template_name = 'upload.html'
+
+    def get(self, request):
+        print 'Change Profile Pic'
+        form = UploadFileForm()
+        return render(request,self.template_name,{'form' : form })
+
+    def post(self, request, **kwargs):
+        form = UploadFileForm(request.POST, request.FILES)
+        user = request.session['email']
+        if form.is_valid():
+            print 'valid form'
+            name = request.POST['title']
+            image = request.FILES['image']
+            name = name+"__profilepic"
+            instance = Photos(name = name, pic= image)
+            instance.save()
+            print "image saved"
+            foo = Image.open(instance.pic.url) 
+            (a,b) =  foo.size  
+            foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
+            foo.save(instance.pic.url)
+            response = cloudinary.uploader.upload(instance.pic.url)
+            url = response['url']    
+            print url
+            student = Users.objects.get(email = user, role = 'S')
+            student.profilePicURL = url
+            student.save()
+            return redirect("/student/studenthome/")
+
+        else:
+            messages.errors = form.errors
+            messages.error(request, 'Invalid fields')
+            print messages.errors
+            print "Invalid form"
+
+            return HttpResponse("Invalid Form!")        
 
 
 

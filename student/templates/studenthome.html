@@ -3,7 +3,11 @@
 <html>
   <head>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-  </head>
+	 <style>
+		img {
+		    float: right;
+		}
+	</style>
   <body>
     <div class="panel-info">
 	    <div class="panel-heading">
@@ -12,12 +16,14 @@
 				    <button type="submit" class="btn btn-primary">LogOut</button>
 				</form>
 			</div>
-	    	<h1><center>Student Home Page</center></h1>  
+	    	<h1><center>Student Home Page</center></h1>
+	    	<img src="{{student.profilePicURL}}" width="95" height="95">
 	    	<p>Name : <b>{{ student.name }}</b></p>
 			<p>ID : <b>{{ student.ID }}</b></p>
 			<p>Department : <b>{{ student.deptID }}</b></p>
 			<p>EmailID : <b>{{ student.email }}</b></p>
 	    </div>
+
 	    <div class="panel-body">
 	    	<form action="/student/raisequery/">
 			    <button type="submit" class="btn btn-primary">Raise Query</button>
@@ -34,7 +40,11 @@
 			    <button type="submit" class="btn btn-primary">Upload Photo</button>
 			</form>
 	    </div>
-
+	    <div class="panel-body">
+			<form action="/photo/changeDP/">
+			    <button type="submit" class="btn btn-primary">Change Profile Pic</button>
+			</form>
+	    </div>
 
 	    <div class="panel-body">
 			<h2>Courses</h2>

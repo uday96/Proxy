@@ -15,6 +15,7 @@ class Users(models.Model):
     )
     role = models.CharField(max_length=1, choices=ROLES)
     password = models.CharField(('password'), max_length=128)
+    profilePicURL = models.CharField(max_length=256,default="")
 
     def __str__(self):
         return self.name
