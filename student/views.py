@@ -8,16 +8,20 @@ from photo.models import CourseGroup
 from pymsgbox import *
 from django.utils.decorators import method_decorator
 from functools import wraps
+import logging
 
-# Create your views here.
+# Get logger
+logger = logging.getLogger('student')
 
 #Decorator Functions
 def assess_role_stud(view_func):
     def _decorator(request):
         if ('email' not in request.session) or ('role' not in request.session):
-            return redirect("/login/logout/")
+        	logger.error("Invalid Session")
+        	return redirect("/login/logout/")
         elif request.session.get('role',"")!='S':
-            return redirect("/login/logout/")
+        	logger.error("Invalid Session")
+        	return redirect("/login/logout/")
         else:
             response = view_func(request)
         return response
@@ -32,21 +36,18 @@ class StudentHome(View):
 		return super(StudentHome, self).dispatch(request)
 
 	def get(self,request):
-		email_get = request.GET.get('mail',None)
-		email = request.session.get('email',email_get)
-		if not email:
-			print "Error"
-			return HttpResponse("Error")
-		
+		email = request.session['email']		
 		try:
+			logger.info("["+email+"] Retrieving Student Info")
 			student = Users.objects.get(email=email,role="S")
 			courselist = CourseGroup.objects.filter(student_id = student.ID)
 			print courselist
 			context = {'student' : student,'course_list':courselist}
 			print context
+			logger.info("["+email+"] Retrieved Student Info Successfully")
 			return render(request,self.template_name,context)
-		except:
-			print "Error"
+		except Exception as e:
+			logger.error("["+email+"]"+str(e))
 		return HttpResponse("Error")
 
 class RaiseQuery(View):
@@ -59,19 +60,19 @@ class RaiseQuery(View):
 
 	def get(self,request):
 		print "raisequery get"
-		email = request.session.get('email',None)
-		if not email:
-			print "Error"
-			return HttpResponse("Error")
+		email = request.session['email']
+		logger.info("["+email+"]"+" Raising Query")
 		student = Users.objects.get(email=email,role="S")
+		logger.info("["+email+"]"+" User object retrieved")
 		form = RaiseQueryForm(initial={'studentID':student.ID})
 		return render(request,self.template_name,{'form' : form })
 
 	def post(self, request, **kwargs):
 		print 'raisequery post'
 		form = RaiseQueryForm(request.POST)
+		email = request.session["email"]
 		if form.is_valid():
-			print 'valid form'
+			logger.info("["+email+"]"+" Raise Query-Valid Form")
 			studentID = form.cleaned_data['studentID']
 			courseID = form.cleaned_data['courseID']
 			query = form.cleaned_data['query']
@@ -80,10 +81,12 @@ class RaiseQuery(View):
 				print queryraised.date
 				queryraised.save()
 				#alert(text='Query Raised Successfully!', title='Status', button='OK')
+				logger.info("["+email+"]"+"Query Raised Successfully!")
 				return redirect("/student/studenthome/")
-			except:
-				print "Error"
+			except Exception as e:
+				logger.error("["+email+"]"+str(e))
 			return HttpResponse("Error")
+		logger.error("["+email+"] Invalid Form")
 		return HttpResponse("Error")
 
 
@@ -97,16 +100,14 @@ class ViewQueries(View):
 
 	def get(self,request):
 		print "viewqueries get"
-		email = request.GET.get('mail',None)
-		email = request.session['email'] if 'email' in request.session else email
-		if not email:
-			print "Error"
-			return HttpResponse("Error")
+		email = request.session['email']
+		logger.info("["+email+"] Viewing Queries")
 		try:
 			student = Users.objects.get(email=email,role="S")
 			studentID = student.ID
 			allqueries = Queries.objects.filter(studentID=studentID)
+			logger.info("["+email+"] Queries Retrieved")
 			return render(request,self.template_name,{'studentID' : studentID ,'query_list' : allqueries })
-		except:
-			print "Error"
+		except Exception as e:
+			logger.error("["+email+"]"+str(e))
 		return HttpResponse("Error")

@@ -27,6 +27,9 @@ class Logout(View):
 		if 'email' in request.session:
 			del request.session['email']
 			request.session.modified = True
+		if 'role' in request.session:
+			del request.session['role']
+			request.session.modified = True
 		return redirect("/login/")
 
 class LoginHome(View):

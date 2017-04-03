@@ -15,15 +15,20 @@ from photo.models import CourseGroup
 from pymsgbox import *
 from django.utils.decorators import method_decorator
 from functools import wraps
+import logging
 
-# Create your views here.
+# Get logger
+logger = logging.getLogger('professor')
+
 
 #Decorator Functions
 def assess_role_prof(view_func):
     def _decorator(request):
         if ('email' not in request.session) or ('role' not in request.session):
+            logger.error("Invalid Session")
             return redirect("/login/logout/")
         elif request.session.get('role',"")!='T':
+            logger.error("Invalid Session")
             return redirect("/login/logout/")
         else:
             response = view_func(request)
