@@ -153,7 +153,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'standard': {
-            'format' : "[%(asctime)s] [%(name)s,%(filename)s,%(funcName)s:%(lineno)s] [%(levelname)s]  %(message)s",
+            'format' : "[%(asctime)s] [%(name)s,%(filename)s,%(funcName)s:%(lineno)s] [%(levelname)s] %(message)s",
             'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
     },
@@ -163,15 +163,31 @@ LOGGING = {
             'class':'logging.StreamHandler',
             'formatter': 'standard'
         },
+        'logfile_student': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR,"logs/student/student.log"),
+            'maxBytes': 1024*1024*5,
+            'backupCount': 10,
+            'formatter': 'standard',
+        },
+        'logfile_professor': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR,"logs/prof/prof.log"),
+            'maxBytes': 1024*1024*5,
+            'backupCount': 10,
+            'formatter': 'standard',
+        },
     },
     'loggers': {
         'student': {
-            'handlers': ['console'],
+            'handlers': ['console','logfile_student'],
             'level': 'DEBUG',
             'propagate': False,
         },
         'professor': {
-            'handlers': ['console'],
+            'handlers': ['console','logfile_professor'],
             'level': 'DEBUG',
             'propagate': False,
         },

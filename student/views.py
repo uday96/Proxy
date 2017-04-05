@@ -41,9 +41,8 @@ class StudentHome(View):
 			logger.info("["+email+"] Retrieving Student Info")
 			student = Users.objects.get(email=email,role="S")
 			courselist = CourseGroup.objects.filter(student_id = student.ID)
-			print courselist
+			logger.debug("CourseList: "+str(courselist))
 			context = {'student' : student,'course_list':courselist}
-			print context
 			logger.info("["+email+"] Retrieved Student Info Successfully")
 			return render(request,self.template_name,context)
 		except Exception as e:
@@ -78,7 +77,7 @@ class RaiseQuery(View):
 			query = form.cleaned_data['query']
 			try:
 				queryraised = Queries.objects.create(studentID=studentID,courseID=courseID,query=query)
-				print queryraised.date
+				logger.debug("date: "+str(queryraised.date))
 				queryraised.save()
 				#alert(text='Query Raised Successfully!', title='Status', button='OK')
 				logger.info("["+email+"]"+"Query Raised Successfully!")
