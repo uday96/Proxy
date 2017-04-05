@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import cloudinary
-
+from loggingFilter import ModuleFilter
 
 cloudinary.config( 
   cloud_name = "proxy", 
@@ -153,45 +153,37 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'standard': {
-            'format' : "[%(asctime)s] [%(name)s,%(filename)s,%(funcName)s:%(lineno)s] [%(levelname)s] %(message)s",
+            'format' : "[%(asctime)s] [%(mymodule)s,%(filename)s,%(funcName)s:%(lineno)s] [%(levelname)s] %(message)s",
             'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
+    },
+    'filters':{
+        'module_filter':{
+            '()': ModuleFilter,
+        }
     },
     'handlers': {
         'console':{
             'level':'DEBUG',
             'class':'logging.StreamHandler',
-            'formatter': 'standard'
-        },
-        'logfile_student': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR,"logs/student/student.log"),
-            'maxBytes': 1024*1024*5,
-            'backupCount': 10,
             'formatter': 'standard',
         },
-        'logfile_professor': {
+        'logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR,"logs/prof/prof.log"),
-            'maxBytes': 1024*1024*5,
+            'filename': os.path.join(BASE_DIR,"logs/logfile.log"),
+            'maxBytes': 1024*1024*10,
             'backupCount': 10,
             'formatter': 'standard',
         },
     },
     'loggers': {
-        'student': {
-            'handlers': ['console','logfile_student'],
+        'backup': {
+            'handlers': ['console','logfile'],
             'level': 'DEBUG',
             'propagate': False,
+            'filters': ['module_filter'],
         },
-        'professor': {
-            'handlers': ['console','logfile_professor'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-
     }
 
 }

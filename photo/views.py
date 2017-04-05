@@ -3,7 +3,6 @@ from .forms import UploadFileForm,ClassPhotoForm
 from .models import *
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-#from supervisors.mixins import SupervisorDomainMixin
 from django.views.generic import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -22,13 +21,17 @@ from ForGreaterGood.settings import MICROSOFT_KEY
 import requests
 import json
 import httplib, urllib, base64
-# Create your views here.
+import logging
+
+# Get logger
+logger = logging.getLogger('backup')
 
 class UploadPhoto(View):
+
     template_name = 'upload.html'
 
     def get(self, request):
-        print 'Upload a photo'
+        logger.info('Upload a photo')
         form = UploadFileForm()
         return render(request,self.template_name,{'form' : form })
 
@@ -36,35 +39,31 @@ class UploadPhoto(View):
         form = UploadFileForm(request.POST, request.FILES)
         user = request.session['email']
         if form.is_valid():
-            print 'valid form'
+            logger.info("["+user+"] Valid Upload Photo Form")
             name = request.POST['title']
             imageList = request.FILES.getlist('image')
             i = 0
             for image in imageList:
+                logger.info("["+user+"] Saving Image")
                 instance = Photos(name = (str(name) + str(i)), pic= image)
                 instance.save()
-                print "image saved"
+                logger.info("["+user+"] Image Saved")
                 foo = Image.open(instance.pic.url) 
                 (a,b) =  foo.size  
                 foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
                 foo.save(instance.pic.url)
+                logger.info("["+user+"] Image Resized")
+                logger.info("["+user+"] Uploading Image to Cloud")
                 response = cloudinary.uploader.upload(instance.pic.url)
+                logger.info("["+user+"] Uploaded Image to Cloud Successfully!")
                 url = response['url']    
-                print url
+                logger.debug("Url: "+str(url))
                 student = Users.objects.get(email = user, role = 'S')
-
                 add_person_image(student.ID,url)
                 i += 1
-            # Account creation is successful. Now we need to add the first user
-            # to this account. This user will also be the admin of the account.
             return redirect("/student/studenthome/")
-
         else:
-            messages.errors = form.errors
-            messages.error(request, 'Invalid fields')
-            print messages.errors
-            print "Invalid form"
-
+            logger.error("Invalid Upload Photo Form")
             return HttpResponse("Invalid Form!")
 
         
@@ -74,8 +73,7 @@ class UploadClassPhotos(View):
     template_name = "class_upload.html"
 
     def get(self, request,course_info):
-        print 'Upload a class photo'
-        
+        logger.info('Upload a class photo')        
         form = ClassPhotoForm()
         return render(request,self.template_name,{'form' : form })
 
@@ -84,52 +82,45 @@ class UploadClassPhotos(View):
         info = str(course_info).split(",")
         group_id = str.lower(info[0]) + "_" + str(info[1])
         if form.is_valid():
-            print 'valid form'
+            logger.info('Valid Upload Class Photo Form')
             course = request.POST['course']
             date = request.POST['date']
-            # image = request.FILES['image']
             imageList = request.FILES.getlist('image')
             urls = []
             image = imageList[0]
-            # Add Here =========================================
             # files = request.FILES.getlist('file_field')
             for image in imageList:
                 instance = Photos(name = course, pic= image)
                 instance.save()
-                print "image saved"
-                print instance.pic.url 
+                logger.info("Image Saved")
+                logger.debug("Url: "+str(instance.pic.url))
                 foo = Image.open(instance.pic.url) 
                 (a,b) =  foo.size  
                 foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
                 foo.save(instance.pic.url)
-                response = cloudinary.uploader.upload(instance.pic.url)   
-                #response = cloudinary.uploader.upload(instance.pic.url) # it was there before
+                logger.info("Image Resized")
+                logger.info("Uploading Image to Cloud")
+                response = cloudinary.uploader.upload(instance.pic.url)
+                logger.info("Uploaded Image to Cloud Successfully!")
                 urls.append(response['url'])
-
                 instance = ClassPhoto(course = group_id,date = date, url = response['url'])
-                instance.save()    
+                instance.save()
+                logger.info("Class Photo Saved")    
 
             detect_faces(info[0],info[1],date,urls)
             course = Course.objects.get(courseID=info[0], year=info[1])
             prof = Users.objects.get(ID=course.profID)
-
-            # Account creation is successful. Now we need to add the first user
-            # to this account. This user will also be the admin of the account.
             
             studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(info[0]))+"_"+str(info[1])))
             try:
                 context = {'course': course, 'prof' : prof, 'studentList' : studentList}
                 return render(request, 'prof/coursepage.html', context)
             except Exception as e:
-                print str(e.message)
+                logger.error(str(e))
             return HttpResponse("Error")
 
         else:
-            messages.errors = form.errors
-            messages.error(request, 'Invalid fields')
-            print messages.errors
-            print "Invalid form"
-
+            logger.error("Invalid Upload Class Photo Form")
             return HttpResponse("Invalid Form!")
 
 
@@ -138,7 +129,7 @@ class ChangeProfilePic(View):
     template_name = 'upload.html'
 
     def get(self, request):
-        print 'Change Profile Pic'
+        logger.info('Change Profile Pic')
         form = UploadFileForm()
         return render(request,self.template_name,{'form' : form })
 
@@ -146,42 +137,40 @@ class ChangeProfilePic(View):
         form = UploadFileForm(request.POST, request.FILES)
         user = request.session['email']
         if form.is_valid():
-            print 'valid form'
+            logger.info("["+user+"] Valid Change Profile Pic Form")
             name = request.POST['title']
             image = request.FILES['image']
             name = name+"__profilepic"
+            logger.info("["+user+"] Saving Image")
             instance = Photos(name = name, pic= image)
             instance.save()
-            print "image saved"
+            logger.info("["+user+"] Image Saved")
             foo = Image.open(instance.pic.url) 
             (a,b) =  foo.size  
             foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
             foo.save(instance.pic.url)
+            logger.info("["+user+"] Image Resized")
+            logger.info("["+user+"] Uploading Image to Cloud")
             response = cloudinary.uploader.upload(instance.pic.url)
             url = response['url']    
-            print url
+            logger.debug("Url: "+str(url))
             student = Users.objects.get(email = user, role = 'S')
             student.profilePicURL = url
             student.save()
+            logger.info("["+user+"] Updated Profile Pic Url")
             return redirect("/student/studenthome/")
 
         else:
-            messages.errors = form.errors
-            messages.error(request, 'Invalid fields')
-            print messages.errors
-            print "Invalid form"
-
+            logger.error("Invalid Change Profile Pic Form")
             return HttpResponse("Invalid Form!")        
 
 
 class DisplayPhotos(View):
-    # return HttpResponse("Hello, world. You're at the prof index page.")
-    # prof = Users.objects.get(email=email_id)
 
     template_name = "image_display.html"
 
     def get(self,request):
-        print 'display student photos'
+        logger.info('Display Student Photos')
         student_id = "cs14b025"
         urls = []
         ids = []
@@ -213,7 +202,7 @@ class DisplayPhotos(View):
 
 
 def DeletePhoto(request,info):
-    print 'deleting student photo'
+    logger.info('Deleting Student Photo')
     data = info.split(",")
     version = data[0]
     img_id = data[1]
@@ -230,46 +219,34 @@ def DeletePhoto(request,info):
     try:
         persons = PersonPhoto.objects.filter(url = url)
         for person in persons:
-            print person.person_id
+            logger.debug("Person: "+str(person.person_id))
             course = CourseGroup.objects.get(person_id=person.person_id)
             api_url = course.person_group_id+"/persons/"+person.person_id+"/persistedFaces/"+person.persisted_id            
             # print api_url
-            # response = requests.request("DELETE",url,data="random",headers=headers)
-            
-            params = urllib.urlencode({})
-          
+            # response = requests.request("DELETE",url,data="random",headers=headers)            
+            params = urllib.urlencode({})          
             try:
                 conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
                 conn.request("DELETE", "/face/v1.0/persongroups/"+api_url+"?%s" % params, "{body}", headers)
-                response = conn.getresponse()
-               
+                response = conn.getresponse()               
                 data = response.read()              
                 conn.close()
-                print response.status                
+                logger.debug("Status: "+str(response.status))
                 if response.status == 200:
-                    print "Successfully deleted from " + course.course_id
+                    logger.info("Successfully deleted from " + str(course.course_id))
                     PersonPhoto.objects.filter(persisted_id=person.persisted_id).delete()
-
                     url1 = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+course.person_group_id+"/train"
                     resp1 = requests.request("POST", url1,data = json.dumps({}) , headers=headers)
                     if resp1.status_code == 202:
-                        print "Successfully put for training"
+                        logger.info("Successfully put for Training")
                     else:
-                        print "unable to train"
-                        print resp1.json()
-                else :
-                        print response.status
-                        print "Error in deleting from " + course.course_id                    
-                        print "done"        
-                        
+                        logger.info("Unable to Train")
+                        logger.debug(str(resp1.json()))
+                else:
+                    logger.error("Error in deleting from " + str(course.course_id))
+                    logger.info("Done")
             except Exception as e:
-                print str(e.message)
-
-
+                logger.error(str(e))
     except Exception as e:
-        print str(e.message)
-        print "Error"
-
+        logger.error(str(e))
     return redirect('/student/myphotos')
-
-

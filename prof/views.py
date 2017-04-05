@@ -18,7 +18,7 @@ from functools import wraps
 import logging
 
 # Get logger
-logger = logging.getLogger('professor')
+logger = logging.getLogger('backup')
 
 
 #Decorator Functions

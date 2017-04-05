@@ -11,7 +11,7 @@ from functools import wraps
 import logging
 
 # Get logger
-logger = logging.getLogger('student')
+logger = logging.getLogger('backup')
 
 #Decorator Functions
 def assess_role_stud(view_func):

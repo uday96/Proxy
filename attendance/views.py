@@ -5,12 +5,13 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, DeleteView
 from django.http import HttpResponse
 from .models import Attendance
-# from login.models import Users
+import logging
 
-# Create your views here.
+# Get logger
+logger = logging.getLogger('backup')
 
 def proccessAttendance(attendanceList):
-    print "proccess attendance"
+    logger.info("Proccess Attendance")
     present=[]
     absent=[]
     for attendance in attendanceList:
@@ -28,7 +29,7 @@ def proccessAttendance(attendanceList):
     return summary
 
 def proccessCourseAtt(attendanceList):
-    print "proccess Course Attendance"
+    logger.info("Proccess Course Attendance")
     datewise = {}
     for attendance in attendanceList:
         date = attendance.date
@@ -54,31 +55,31 @@ def proccessCourseAtt(attendanceList):
             'count_present':len(datewise[key]["present"]),
             'count_absent':len(datewise[key]["absent"]),
             })
-
     return summary
 
 
 def history(request, info):
-    # return HttpResponse("Hello, world. You're at the prof index page.")
-    # prof = Users.objects.get(email=email_id)
+    logger.info("Attendance History")
     [courseID, studentID, year] = info.split(',')
     try:
         attendanceList = Attendance.objects.filter(courseID=courseID, studentID=studentID, year=year)
         context = {'attendance_list': attendanceList, 'courseID' : courseID, 'studentID' : studentID, 'year' : year}
         return render(request, 'attendance/history.html', context)
-    except:
-        print "Error"
+    except Exception as e:
+        logger.error("Failed to Retrieve Attendance History")
+        logger.error(str(e))
     # context = {'course_list': courseList, 'prof' : prof}
     # return render(request, 'prof/homepage.html', context)
     return HttpResponse("Error")
 
 def showImage(request, attID):
+    logger.info("Showing Image")
     try:
         attendance = Attendance.objects.get(id=attID)
         context = {'attendance' : attendance}
         return render(request, 'attendance/showImage.html', context)
-    except:
-        print "Error"
+    except Exception as e:
+        logger.error(str(e))
     return HttpResponse("Error")
 
 class IndividualSummary(View):
@@ -86,18 +87,18 @@ class IndividualSummary(View):
     template_name = 'attendance/individualSummary.html'
 
     def get(self,request):
-        print "IndividualSummary get"
+        logger.info("Getting Individual Summary")
         try:
             courseID = request.GET.get("courseID",None)
             studentID = request.GET.get("studentID",None)
             year = int(request.GET.get("year",None))
-            print courseID, studentID, year
+            logger.debug(str(courseID)+" "+str(studentID)+" "+str(year))
             attendanceList = Attendance.objects.filter(courseID=courseID,studentID=studentID,year=year)
             summary = proccessAttendance(attendanceList)
             context = {'summary': summary, 'courseID' : courseID, 'studentID' : studentID, 'year' : year}
             return render(request, self.template_name, context)
         except Exception as e:
-            print str(e)
+            logger.error(str(e))
         return HttpResponse("Error")
         
 class CourseSummary(View):
@@ -105,15 +106,15 @@ class CourseSummary(View):
     template_name = 'attendance/courseSummary.html'
 
     def get(self,request):
-        print "CourseSummary get"
+        logger.info("Getting Course Summary")
         try:
             courseID = request.GET.get("courseID",None)
             year = int(request.GET.get("year",None))
-            print courseID, year
+            logger.debug(str(courseID)+" "+str(year))
             attendanceList = Attendance.objects.filter(courseID=courseID,year=year)
             summary = proccessCourseAtt(attendanceList)
             context = {'summary': summary, 'courseID' : courseID,'year' : year}
             return render(request, self.template_name, context)
         except Exception as e:
-            print str(e)
+            logger.error(str(e))
         return HttpResponse("Error")
