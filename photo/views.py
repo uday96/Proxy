@@ -38,6 +38,8 @@ class UploadPhoto(View):
     def post(self, request, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)
         user = request.session['email']
+        user_instance = Users.objects.get(email=user)
+        user_id = user_instance.ID
         if form.is_valid():
             logger.info("["+user+"] Valid Upload Photo Form")
             name = request.POST['title']
@@ -58,8 +60,10 @@ class UploadPhoto(View):
                 logger.info("["+user+"] Uploaded Image to Cloud Successfully!")
                 url = response['url']    
                 logger.debug("Url: "+str(url))
-                student = Users.objects.get(email = user, role = 'S')
-                add_person_image(student.ID,url)
+                new_photo = StudentPhotos(studentID=user_id,url=url,status='P')
+                new_photo.save()
+                # student = Users.objects.get(email = user, role = 'S')
+                # add_person_image(student.ID,url)
                 i += 1
             return redirect("/student/studenthome/")
         else:
@@ -171,7 +175,10 @@ class DisplayPhotos(View):
 
     def get(self,request):
         logger.info('Display Student Photos')
-        student_id = "cs14b025"
+        user = request.session['email']
+        user = Users.objects.get(email=user)
+        student_id = user.ID
+        logger.info("student is " + student_id)
         urls = []
         ids = []
         versions = []
@@ -190,13 +197,13 @@ class DisplayPhotos(View):
 
             data = zip(versions,ids) 
             context = {'studentID' : student_id , 'data' : data}
-            print context
+            
             return render(request, self.template_name, context)
-            print "here"
+           
 
         except Exception as e:
-            print str(e.message)
-            print "error1"
+            logger.error(str(e.message))
+            logger.error("error in deleting photos")
 
         return HttpResponse("Error1")
 
