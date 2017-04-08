@@ -14,6 +14,8 @@ from pymsgbox import *
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 from django.views.decorators.csrf import csrf_exempt
+from photo.models import StudentPhotos
+from photo.microsoft import add_person_image
 
 #Get Logger
 logger = logging.getLogger('backup')
@@ -171,3 +173,24 @@ class AdminHome(View):
 		except Exception as e:
 			logger.error("["+email+"]"+str(e))
 		return HttpResponse("Error")
+
+
+
+def authenticate(request,info):
+	logger.info("information got is " + info)
+	data = info.split(",")
+	row_id = int(data[0])
+	action = int(data[1])
+
+	instance = StudentPhotos.objects.get(id=row_id)
+	url = instance.url
+	student_id = instance.student_id
+
+	if action == 0:
+		instance.status = 'R'
+		instance.save()
+	else:
+		add_person_image(student_id,url,instance)
+
+
+

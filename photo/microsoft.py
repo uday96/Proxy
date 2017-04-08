@@ -1,5 +1,5 @@
 import requests
-from .models import CourseGroup,PersonPhoto
+from .models import CourseGroup,PersonPhoto,StudentPhotos
 from login.models import Users
 import json
 from ForGreaterGood.settings import MICROSOFT_KEY
@@ -57,11 +57,10 @@ def create_person(course_id,year,student_ids):
 
 				try:
 					urls = []
-					courselist = CourseGroup.objects.filter(student_id=student_id)
-					for course in courselist:
-						images = PersonPhoto.objects.filter(person_id=course.person_id)
-						for image in images:
-							urls.append(image.url)
+					
+					images = StudentPhotos.objects.filter(studentID=student_id,status='A')
+					for image in images:
+						urls.append(image.url)
 
 					urls = list(set(urls))
 					endpoint = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+group_id+"/persons/"+person_id+"/persistedFaces"
@@ -100,7 +99,7 @@ def create_person(course_id,year,student_ids):
 	else:
 		print "unable to train"
 
-def add_person_image(student_id,img_url):
+def add_person_image(student_id,img_url,instance):
 	print img_url
 	persons = CourseGroup.objects.filter(student_id = student_id)
 	
@@ -111,6 +110,7 @@ def add_person_image(student_id,img_url):
 			
     }
 				
+	success = True
 
 	for p in persons:
 
@@ -128,6 +128,7 @@ def add_person_image(student_id,img_url):
 			print "saved in db for " + per_id
 		else:
 			print "face not added for " + p.person_group_id
+			success = False
 			print resp.json()
 
 		url1 = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+p.person_group_id+"/train"
@@ -138,6 +139,10 @@ def add_person_image(student_id,img_url):
 		else:
 			print "unable to train"
 			print resp1.json()
+
+	if success:
+		instance.status = 'A'
+		instance.save()
 
 
 

@@ -12,10 +12,19 @@
       </div>
       <div class="panel-body">
           	<table style="width: 60%;margin-left:20%">
-				{% if data %}
+				{% if data or pend_data%}
 				<tr>
 				    <th><b><u>Photo</u></b></th>
-				    <th><b><u>Action</u></b></th>				    
+				    <th><b><u>Action</u></b></th>
+
+				    {% for i,j in pend_data %}
+				    <tr>
+				        <td><img src="http://res.cloudinary.com/proxy/image/upload/{{i}}/{{j}}"  style="width:20%;height:20%;"></td>
+				        <td>Pending Approval       	
+				        	
+			    		</td>			        
+				    </tr>	
+				    {% endfor %}			    
 
 				
 				    {% for i,j in data %}

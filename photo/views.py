@@ -22,6 +22,7 @@ import requests
 import json
 import httplib, urllib, base64
 import logging
+from django.db.models import Q
 
 # Get logger
 logger = logging.getLogger('backup')
@@ -180,23 +181,37 @@ class DisplayPhotos(View):
         student_id = user.ID
         logger.info("student is " + student_id)
         urls = []
+        pend_urls = []
         ids = []
         versions = []
+        pend_ids = []
+        pend_versions = []
         try:
-            courselist = CourseGroup.objects.filter(student_id=student_id)
-            for course in courselist:
-                images = PersonPhoto.objects.filter(person_id=course.person_id)
-                for image in images:
-                    urls.append(image.url)
+            # courselist = CourseGroup.objects.filter(student_id=student_id)
+            # for course in courselist:
+            images = StudentPhotos.objects.filter(studentID=student_id,status='A')
+            pend_images = StudentPhotos.objects.filter(studentID=student_id,status='P')
+            for image in images:
+                urls.append(image.url)
+
+            for image in pend_images:
+                pend_urls.append(image.url)
 
             urls = list(set(urls))
+            pend_urls = list(set(pend_urls))
             for url in urls:
                 i = url.split("/")
                 versions.append(i[-2])
                 ids.append(i[-1])
 
+            for url in pend_urls:
+                i = url.split("/")
+                pend_versions.append(i[-2])
+                pend_ids.append(i[-1])
+
             data = zip(versions,ids) 
-            context = {'studentID' : student_id , 'data' : data}
+            pend_data = zip(pend_versions,pend_ids)
+            context = {'studentID' : student_id , 'data' : data,'pend_data':pend_data}
             
             return render(request, self.template_name, context)
            
@@ -242,6 +257,7 @@ def DeletePhoto(request,info):
                 if response.status == 200:
                     logger.info("Successfully deleted from " + str(course.course_id))
                     PersonPhoto.objects.filter(persisted_id=person.persisted_id).delete()
+                    StudentPhotos.objects.filter(url=url).delete()
                     url1 = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+course.person_group_id+"/train"
                     resp1 = requests.request("POST", url1,data = json.dumps({}) , headers=headers)
                     if resp1.status_code == 202:
