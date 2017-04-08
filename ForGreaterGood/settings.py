@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import cloudinary
-
+from loggingFilter import ModuleFilter
 
 cloudinary.config( 
   cloud_name = "proxy", 
@@ -147,3 +147,43 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format' : "[%(asctime)s] [%(mymodule)s,%(filename)s,%(funcName)s:%(lineno)s] [%(levelname)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+    },
+    'filters':{
+        'module_filter':{
+            '()': ModuleFilter,
+        }
+    },
+    'handlers': {
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'standard',
+        },
+        'logfile': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR,"logs/logfile.log"),
+            'maxBytes': 1024*1024*10,
+            'backupCount': 10,
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        'backup': {
+            'handlers': ['console','logfile'],
+            'level': 'DEBUG',
+            'propagate': False,
+            'filters': ['module_filter'],
+        },
+    }
+
+}
