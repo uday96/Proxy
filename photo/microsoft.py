@@ -54,12 +54,51 @@ def create_person(course_id,year,student_ids):
 				person_id = resp['personId']
 				person = CourseGroup(person_group_id = group_id,student_id=student_id,person_id = person_id,course_id=course_id,year=year)
 				person.save()
+
+				try:
+					urls = []
+					courselist = CourseGroup.objects.filter(student_id=student_id)
+					for course in courselist:
+						images = PersonPhoto.objects.filter(person_id=course.person_id)
+						for image in images:
+							urls.append(image.url)
+
+					urls = list(set(urls))
+					endpoint = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+group_id+"/persons/"+person_id+"/persistedFaces"
+					for img_url in urls:
+						data = {"url":str(img_url)}
+						resp = requests.request("POST", endpoint, data=json.dumps(data), headers=headers)
+
+						if resp.status_code == 200:
+							print "face added for " + group_id
+							body = resp.json()
+							per_id = body['persistedFaceId']
+							ins = PersonPhoto(person_id = person_id,persisted_id = per_id,url = img_url)
+							ins.save() 
+							print "saved in db for " + per_id
+						else:
+							print "face not added for " + group_id
+							print resp.json()
+
+				except Exception as e:
+					print "unable to upload images"
+					print str(e.message)
+
+
 				print "person created"
 			else:
 				print "error in creating person"
 				print resp
 		except Exception as e:
 			print str(e)
+
+	url1 = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/"+group_id+"/train"
+	body1 = {}
+	resp1 = requests.request("POST", url1,data = json.dumps(body1) , headers=headers)
+	if resp1.status_code == 202:
+		print "Successfully put for training"
+	else:
+		print "unable to train"
 
 def add_person_image(student_id,img_url):
 	print img_url

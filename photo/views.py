@@ -171,7 +171,10 @@ class DisplayPhotos(View):
 
     def get(self,request):
         logger.info('Display Student Photos')
-        student_id = "cs14b025"
+        user = request.session['email']
+        user = Users.objects.get(email=user)
+        student_id = user.ID
+        logger.info("student is " + student_id)
         urls = []
         ids = []
         versions = []
@@ -190,13 +193,13 @@ class DisplayPhotos(View):
 
             data = zip(versions,ids) 
             context = {'studentID' : student_id , 'data' : data}
-            print context
+            
             return render(request, self.template_name, context)
-            print "here"
+           
 
         except Exception as e:
-            print str(e.message)
-            print "error1"
+            logger.error(str(e.message))
+            logger.error("error in deleting photos")
 
         return HttpResponse("Error1")
 
