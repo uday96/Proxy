@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^student/', include('student.urls')),
     url(r'^attendance/', include('attendance.urls')),
     url(r'^administrator/', AdminHome.as_view(), name="administrator"),
-    url(r'^administrator/auth/((?P<info>[0-9,]+)$)', authenticate, name="administrator_authenticate"),
-    url(r'^administrator/authenticate/', AuthenticatePhotos.as_view(), name="authenticate"),
+    url(r'^auth/((?P<info>[0-9,]+)$)', authenticate, name="administrator_authenticate"),
+    url(r'^authenticate/', AuthenticatePhotos.as_view(), name="authenticate"),
     url(r'^$',Home),
 ]

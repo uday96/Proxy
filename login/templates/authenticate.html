@@ -32,13 +32,14 @@
 				        <td><img src="{{photo.profilePicURL}}" width="95" height="95"></td>
 				        <td>{{photo.studentID}}</td>
 				        <td><img src="{{photo.url}}" width="95" height="95"></td>
-				        <td><form method="post" action="administrator/auth/{{photo.ID}},1"><button type="submit">Accept</button></form><br><form method="post" action="administrator/auth/{{photo.ID}},0"><button type="submit">Reject</button></form></td>
+				        <td><form method="post" action="/auth/{{photo.ID}},1"><button type="submit">Accept</button></form><br><form method="post" action="/auth/{{photo.ID}},0"><button type="submit">Reject</button></form></td>
 				    </tr>
 				    {% endfor %}    
 				</table>
 			{% else %}
 				<h3>No Photos to Authenticate</h3>
-			{% endif %}			
+			{% endif %}		
+			{% csrf_token %}	
       </div>
     </div>
   </body>

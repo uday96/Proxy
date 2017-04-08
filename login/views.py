@@ -175,6 +175,7 @@ class AdminHome(View):
 			logger.error("["+email+"] "+str(e))
 		return HttpResponse("Error")
 
+@csrf_exempt
 def authenticate(request,info):
 	logger.info("information got is " + info)
 	data = info.split(",")
@@ -183,7 +184,7 @@ def authenticate(request,info):
 
 	instance = StudentPhotos.objects.get(id=row_id)
 	url = instance.url
-	student_id = instance.student_id
+	student_id = instance.studentID
 
 	if action == 0:
 		instance.status = 'R'
@@ -191,17 +192,8 @@ def authenticate(request,info):
 	else:
 		add_person_image(student_id,url,instance)
 
-	return redirect('/administrator/authenticate/')
+	return redirect('/authenticate/')
 
-def authPhoto(StudentPhoto):
-	studentID = StudentPhoto.studentID
-	student = Users.objects.get(ID=studentID,role="S")
-	profilePicURL = student.profilePicURL
-	StudentPhotoInfo = StudentPhoto.__dict__
-	ID = StudentPhoto.id
-	StudentPhotoInfo["profilePicURL"] = profilePicURL
-	StudentPhotoInfo["ID"] = ID
-	return StudentPhotoInfo
 
 class AuthenticatePhotos(View):
 
@@ -218,6 +210,8 @@ class AuthenticatePhotos(View):
 				profilePicURL = student.profilePicURL
 				StudentPhotoInfo = StudentPhoto.__dict__
 				StudentPhotoInfo["profilePicURL"] = profilePicURL
+				ID = StudentPhoto.id
+				StudentPhotoInfo["ID"] = ID	
 				PhotosInfo.append(StudentPhotoInfo)
 			context = {"Photos": PhotosInfo}
 			return render(request,self.template_name,context)
