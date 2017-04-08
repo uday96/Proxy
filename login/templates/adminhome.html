@@ -1,0 +1,39 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+<link href="{% static 'login/style.css' %}" rel="stylesheet">
+<meta charset="UTF-8">
+
+<title>Admin</title>
+
+</head>
+
+<body>
+
+<div class="transbox">
+    <p style="text-align: center; color: #ffffff; font-size: 300%;">Attendance System</p>
+</div>
+<div class="login-block">
+    <h1>Admin</h1>
+    <form action="/login/add/">
+        <button type="submit" style="width: #009933">New User</button>
+    </form>
+    <p></p>
+    <form action="/login/forgot/">
+        <button type="submit">Forgot Password</button>
+    </form>
+    <p></p>
+    <form>
+        <button type="submit">Authenticate Photos</button>
+    </form>
+    <p></p>
+    <form action="/login/logout/">
+        <button type="submit">Log Out</button>
+    </form>
+</div>
+</body>
+
+</html>

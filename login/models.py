@@ -12,6 +12,7 @@ class Users(models.Model):
     ROLES = (
         ('S', 'Student'),
         ('T', 'Teacher'),
+        ('A', 'Admin'),
     )
     role = models.CharField(max_length=1, choices=ROLES)
     password = models.CharField(('password'), max_length=128)

@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from login.views import Home
+from login.views import AdminHome, Home
 
 urlpatterns = [
     url(r'^login/', include('login.urls')),
@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^prof/', include('prof.urls')),
     url(r'^student/', include('student.urls')),
     url(r'^attendance/', include('attendance.urls')),
+    url(r'^administrator/', AdminHome.as_view(), name="administrator"),
     url(r'^$',Home),
 ]
