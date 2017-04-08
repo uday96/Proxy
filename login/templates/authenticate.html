@@ -32,7 +32,7 @@
 				        <td><img src="{{photo.profilePicURL}}" width="95" height="95"></td>
 				        <td>{{photo.studentID}}</td>
 				        <td><img src="{{photo.url}}" width="95" height="95"></td>
-				        <td><form method="post" action="administrator/auth/1,0"><button type="submit">Accept</button></form><br><form method="post" action="administrator/auth/0,1"><button type="submit">Reject</button></form></td>
+				        <td><form method="post" action="administrator/auth/{{photo.ID}},1"><button type="submit">Accept</button></form><br><form method="post" action="administrator/auth/{{photo.ID}},0"><button type="submit">Reject</button></form></td>
 				    </tr>
 				    {% endfor %}    
 				</table>
