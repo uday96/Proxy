@@ -190,7 +190,8 @@ def authenticate(request,info):
 		instance.save()
 	else:
 		add_person_image(student_id,url,instance)
-		
+
+	return redirect('/administrator/authenticate/')
 
 def authPhoto(StudentPhoto):
 	studentID = StudentPhoto.studentID
