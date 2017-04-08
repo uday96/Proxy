@@ -14,6 +14,7 @@ from pymsgbox import *
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 from django.views.decorators.csrf import csrf_exempt
+from photo.models import StudentPhotos
 
 #Get Logger
 logger = logging.getLogger('backup')
@@ -169,5 +170,36 @@ class AdminHome(View):
 			logger.info("["+email+"] Retrieved Admin Info Successfully")
 			return render(request,self.template_name,context)
 		except Exception as e:
-			logger.error("["+email+"]"+str(e))
+			logger.error("["+email+"] "+str(e))
 		return HttpResponse("Error")
+
+def authPhoto(StudentPhoto):
+	studentID = StudentPhoto.studentID
+	student = Users.objects.get(ID=studentID,role="S")
+	profilePicURL = student.profilePicURL
+	StudentPhotoInfo = StudentPhoto.__dict__
+	ID = StudentPhoto.id
+	StudentPhotoInfo["profilePicURL"] = profilePicURL
+	StudentPhotoInfo["ID"] = ID
+	return StudentPhotoInfo
+
+class AuthenticatePhotos(View):
+
+	template_name = "authenticate.html"
+
+	def get(self,request):
+		logger.info("[admin] Authenticating Photos")
+		try:
+			toAuthenticate = StudentPhotos.objects.filter(status="P")
+			PhotosInfo = []
+			for StudentPhoto in toAuthenticate:
+				studentID = StudentPhoto.studentID
+				student = Users.objects.get(ID=studentID,role="S")
+				profilePicURL = student.profilePicURL
+				StudentPhotoInfo = StudentPhoto.__dict__
+				StudentPhotoInfo["profilePicURL"] = profilePicURL
+				PhotosInfo.append(StudentPhotoInfo)
+			context = {"Photos": PhotosInfo}
+			return render(request,self.template_name,context)
+		except Exception as e:
+			logger.error("[admin] "+str(e))
