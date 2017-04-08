@@ -7,8 +7,7 @@
 <style>
 
 div.transbox {
-  position:absolute;
-  
+  position:relative;  
   border: 2px solid ;
   border-color: red ;
   opacity: 1;
@@ -23,8 +22,8 @@ var img = new Image();
 img.onload = function(){
 	var height = img.height;
 	var width = img.width;
-	var scale1 = 200/height;
-	var scale2 = 200/width;
+	var scale1 = 1000/height;
+	var scale2 = 1000/width;
 	document.getElementById("tagId").style.top = parseInt({{attendance.top}}*scale1);
 	document.getElementById("tagId").style.height = parseInt({{attendance.height}}*scale1);
 	document.getElementById("tagId").style.left = parseInt({{attendance.left}}*scale2);
@@ -36,7 +35,7 @@ img.src = "{{attendance.url}}";
 </head>
 <body>
 
-<div id = "imgDivId" style="position: relative; background: url({{attendance.url}}); background-size: 200px 200px; width: 200px; height: 200px; background-repeat: no-repeat;">
+<div id = "imgDivId" style="position: absolute;top:10%;left:10%; background: url({{attendance.url}}); background-size: 1000px 1000px; width: 1000px; height: 1000px; background-repeat: no-repeat;">
 <div class="transbox" id = "tagId">
 </div>
 </div>
