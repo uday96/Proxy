@@ -17,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from photo.models import StudentPhotos
 from photo.microsoft import add_person_image
 
+
 #Get Logger
 logger = logging.getLogger('backup')
 
@@ -171,10 +172,8 @@ class AdminHome(View):
 			logger.info("["+email+"] Retrieved Admin Info Successfully")
 			return render(request,self.template_name,context)
 		except Exception as e:
-			logger.error("["+email+"]"+str(e))
+			logger.error("["+email+"] "+str(e))
 		return HttpResponse("Error")
-
-
 
 def authenticate(request,info):
 	logger.info("information got is " + info)
@@ -191,6 +190,36 @@ def authenticate(request,info):
 		instance.save()
 	else:
 		add_person_image(student_id,url,instance)
+		
 
+def authPhoto(StudentPhoto):
+	studentID = StudentPhoto.studentID
+	student = Users.objects.get(ID=studentID,role="S")
+	profilePicURL = student.profilePicURL
+	StudentPhotoInfo = StudentPhoto.__dict__
+	ID = StudentPhoto.id
+	StudentPhotoInfo["profilePicURL"] = profilePicURL
+	StudentPhotoInfo["ID"] = ID
+	return StudentPhotoInfo
 
+class AuthenticatePhotos(View):
+
+	template_name = "authenticate.html"
+
+	def get(self,request):
+		logger.info("[admin] Authenticating Photos")
+		try:
+			toAuthenticate = StudentPhotos.objects.filter(status="P")
+			PhotosInfo = []
+			for StudentPhoto in toAuthenticate:
+				studentID = StudentPhoto.studentID
+				student = Users.objects.get(ID=studentID,role="S")
+				profilePicURL = student.profilePicURL
+				StudentPhotoInfo = StudentPhoto.__dict__
+				StudentPhotoInfo["profilePicURL"] = profilePicURL
+				PhotosInfo.append(StudentPhotoInfo)
+			context = {"Photos": PhotosInfo}
+			return render(request,self.template_name,context)
+		except Exception as e:
+			logger.error("[admin] "+str(e))
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+		table, th, td {
+		    border: 1px solid black;
+		    border-collapse: collapse;
+		}
+		th, td {
+		    padding: 5px;
+		    text-align: left;
+		}
+	</style>
+  </head>
+  <body>
+    <div class="panel-info">
+      <div class="panel-heading">
+        <h1><center>Authenticate Photos</center></h1>
+      </div>
+      <div class="panel-body">
+      		{% if Photos %}
+	          	<table>
+					<tr>
+					    <th><b><u>Profile Pic</u></b></th>
+					    <th><b><u>Student ID</u></b></th>
+					    <th><b><u>Uploaded Image</u></b></th>
+					    <th><b><u>Action</u></b></th>
+					</tr>
+				    {% for photo in Photos%}
+				    <tr>
+				        <td><img src="{{photo.profilePicURL}}" width="95" height="95"></td>
+				        <td>{{photo.studentID}}</td>
+				        <td><img src="{{photo.url}}" width="95" height="95"></td>
+				        <td><form method="post" action="administrator/auth/{{photo.ID}},1"><button type="submit">Accept</button></form><br><form method="post" action="administrator/auth/{{photo.ID}},0"><button type="submit">Reject</button></form></td>
+				    </tr>
+				    {% endfor %}    
+				</table>
+			{% else %}
+				<h3>No Photos to Authenticate</h3>
+			{% endif %}			
+      </div>
+    </div>
+  </body>
+</html>

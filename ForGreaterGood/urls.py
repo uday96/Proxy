@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from login.views import AdminHome, Home, authenticate
+from login.views import AdminHome, Home, AuthenticatePhotos,authenticate
+
 
 urlpatterns = [
     url(r'^login/', include('login.urls')),
@@ -26,5 +27,6 @@ urlpatterns = [
     url(r'^attendance/', include('attendance.urls')),
     url(r'^administrator/', AdminHome.as_view(), name="administrator"),
     url(r'^administrator/auth/((?P<info>[0-9,]+)$)', authenticate, name="administrator_authenticate"),
+    url(r'^administrator/authenticate/', AuthenticatePhotos.as_view(), name="authenticate"),
     url(r'^$',Home),
 ]
