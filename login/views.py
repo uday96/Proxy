@@ -1,9 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import UpdateView, DeleteView
 from .forms import UserAddForm, UserLoginForm
 from .models import Users
 from .functions import check_password, set_password
@@ -16,6 +13,7 @@ import cloudinary.api
 from pymsgbox import *
 from django.core.exceptions import ObjectDoesNotExist
 import logging
+from django.views.decorators.csrf import csrf_exempt
 
 #Get Logger
 logger = logging.getLogger('backup')
@@ -41,15 +39,17 @@ class Logout(View):
 
 class LoginHome(View):
 
-	template_name = 'index.html'
+	template_name = 'login.html'
 
 	def get(self, request):
 		logger.info("Logging In")
 		form = UserLoginForm()
 		return render(request,self.template_name,{'header' : "Login",'form' : form })
 
+	@csrf_exempt
 	def post(self, request, **kwargs):
 		print 'Login post'
+		print request.POST
 		form = UserLoginForm(request.POST)
 		if form.is_valid():
 			logger.info("Valid Login Form")
@@ -64,7 +64,9 @@ class LoginHome(View):
 					request.session['role'] = userob.role
 					logger.info("Session Variables Updated")
 					logger.info("Logged In Successfully!")
-					if userob.role == "T":
+					if userob.role == "A":
+						return redirect("/administrator/")
+					elif userob.role == "T":
 						return redirect("/prof/profhome/")
 					else:
 						return redirect("/student/studenthome/")		
@@ -81,16 +83,13 @@ class LoginHome(View):
 
 class AddUser(View):
 
-	template_name = 'index.html'
+	template_name = 'newUser.html'
 
 	def get(self, request):
 		logger.info('Add an account')
-		mail = ""
-		if(request.GET.get('mail',None) != None):
-			mail = request.GET['mail']
-		form = UserAddForm(initial={'email' : mail})
-		return render(request,self.template_name,{'header' : "Add User",'form' : form })
+		return render(request,self.template_name)
 
+	@csrf_exempt
 	def post(self, request, **kwargs):
 		form = UserAddForm(request.POST)
 		if form.is_valid():
@@ -117,45 +116,31 @@ class AddUser(View):
 				#alert(text='User Created Successfully!', title='Status', button='OK')
 			except IntegrityError:
 				logger.error("User ["+email+"] Already Exists!")
-				return redirect("/login/")
-			return redirect("/login/")
+				return redirect("/administrator/")
+			return redirect("/administrator/")
 		else:
 			logger.error("Invalid AddUser Form")
 			return HttpResponse("Invalid Form!")
-		return redirect("/login/")
+		return redirect("/administrator/")
 
 class ForgotPwd(View):
 
-	template_name = 'index.html'
+	template_name = 'password.html'
 
 	def get(self, request):
 		logger.info('Forgot Pwd')
-		mail = ""
-		if(request.GET.get('mail',None) != None):
-			mail = request.GET['mail']
-		form = UserAddForm(initial={'email' : mail})
-		return render(request,self.template_name,{'header' : "Forgot Password",'form' : form })
+		return render(request,self.template_name)
 
+	@csrf_exempt
 	def post(self, request, **kwargs):
-		form = UserAddForm(request.POST)
+		form = UserLoginForm(request.POST)
 		if form.is_valid():
 			logger.info("Valid Change Pwd Form")
-			name = form.cleaned_data['name']
 			email = form.cleaned_data['email']
-			ID = form.cleaned_data['ID']
-			deptID = form.cleaned_data['deptID']
-			role = form.cleaned_data['role']
 			password = form.cleaned_data['password']
 			try:
 				logger.info("["+email+"] Retrieving User")
-				logger.debug("Role : "+role)
-				existing_user = Users.objects.get(
-					name = name,
-					email = email,
-					ID = ID,
-					deptID = deptID,
-					role = role
-				)
+				existing_user = Users.objects.get(email = email)
 				logger.info("["+email+"] Updating Pwd")
 				newPassword = set_password(password)
 				existing_user.password = newPassword
@@ -163,10 +148,26 @@ class ForgotPwd(View):
 				logger.info("["+email+"] Updated Pwd Successfully!")
 			except Exception as e:
 				logger.error("["+email+"] Change Pwd Failed : "+str(e))
-				return redirect("/login/")
+				return redirect("/administrator/")
 			# Change pwd is successful.
-			return redirect("/login/")
+			return redirect("/administrator/")
 		else:
 			logger.error("Invalid Change Pwd Form")
 			return HttpResponse("Invalid Form!")
-		return redirect("/login/")
+		return redirect("/administrator/")
+
+class AdminHome(View):
+
+	template_name = "adminhome.html"
+
+	def get(self,request):
+		email = request.session['email']		
+		try:
+			logger.info("["+email+"] Retrieving Admin Info")
+			admin = Users.objects.get(email=email,role="A")
+			context = {'admin' : admin}
+			logger.info("["+email+"] Retrieved Admin Info Successfully")
+			return render(request,self.template_name,context)
+		except Exception as e:
+			logger.error("["+email+"]"+str(e))
+		return HttpResponse("Error")

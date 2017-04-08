@@ -1,0 +1,30 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+<link href="{% static 'login/style.css' %}" rel="stylesheet">
+<meta charset="UTF-8">
+
+<title>Login</title>
+
+</head>
+
+<body>
+
+<div class="transbox">
+    <p style="text-align: center; color: #ffffff; font-size: 300%;">Attendance System</p>
+</div>
+<div class="login-block">
+    <h1>Login</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" value="" placeholder="Username" id="username" name="email" />
+        <input type="password" value="" placeholder="Password" id="password" name="password"/>
+        <button type="submit">Submit</button>&nbsp;
+    </form>
+</div>
+</body>
+
+</html>
