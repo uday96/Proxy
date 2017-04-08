@@ -44,3 +44,15 @@ class PersonPhoto(models.Model):
 	def __str__(self):
 		return self.persisted_id
 
+class StudentPhotos(models.Model):
+	studentID = models.CharField(max_length=128)
+	url = models.CharField(max_length=200,default="")
+	STATUSES = (
+		('A', 'Accepted'),
+		('P', 'Pending'),
+		('R', 'Rejected'),
+    )
+	status = models.CharField(max_length=1, choices=STATUSES, default='P')
+
+	def __str__(self):
+		return self.url
