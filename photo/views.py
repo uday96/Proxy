@@ -22,19 +22,21 @@ import requests
 import json
 import httplib, urllib, base64
 import logging
-from django.db.models import Q
+from login.models import Users
 
 # Get logger
 logger = logging.getLogger('backup')
 
 class UploadPhoto(View):
 
-    template_name = 'upload.html'
+    template_name = 'test.html'
 
     def get(self, request):
         logger.info('Upload a photo')
+        email = request.session["email"]
+        student = Users.objects.get(email=email,role="S")
         form = UploadFileForm()
-        return render(request,self.template_name,{'form' : form })
+        return render(request,self.template_name,{'form' : form,'student':student })
 
     def post(self, request, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)
@@ -135,8 +137,10 @@ class ChangeProfilePic(View):
 
     def get(self, request):
         logger.info('Change Profile Pic')
+        email = request.session["email"]
+        student = Users.objects.get(email=email,role="S")
         form = UploadFileForm()
-        return render(request,self.template_name,{'form' : form })
+        return render(request,self.template_name,{'form' : form,'student':student })
 
     def post(self, request, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)

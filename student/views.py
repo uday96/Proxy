@@ -63,8 +63,7 @@ class RaiseQuery(View):
 		logger.info("["+email+"]"+" Raising Query")
 		student = Users.objects.get(email=email,role="S")
 		logger.info("["+email+"]"+" User object retrieved")
-		form = RaiseQueryForm(initial={'studentID':student.ID})
-		return render(request,self.template_name,{'form' : form })
+		return render(request,self.template_name,{'student' : student })
 
 	def post(self, request, **kwargs):
 		print 'raisequery post'
@@ -106,7 +105,7 @@ class ViewQueries(View):
 			studentID = student.ID
 			allqueries = Queries.objects.filter(studentID=studentID)
 			logger.info("["+email+"] Queries Retrieved")
-			return render(request,self.template_name,{'studentID' : studentID ,'query_list' : allqueries })
+			return render(request,self.template_name,{'student' : student ,'query_list' : allqueries })
 		except Exception as e:
 			logger.error("["+email+"]"+str(e))
 		return HttpResponse("Error")

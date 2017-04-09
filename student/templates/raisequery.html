@@ -1,26 +1,17 @@
-{% load crispy_forms_tags %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="panel-info">
-	    <div class="panel-heading">
-		    <div class="container" align="right">
-		    	<form action="/student/studenthome/">
-		            <button type="submit" class="btn btn-primary">Home</button>
-		        </form>
-		    </div>
-	    	<h1><center>Raise Query</center></h1>  
-	    </div>
-	    <div class="panel-body">
-	    	<form method="post" class="uniForm" style="width:30%">
-	    		{% csrf_token %}
-	    		{{ form|crispy }}
-			    <button type="submit" class="btn btn-primary">Submit</button>
-			</form>
-	    </div>
-	</div>
-  </body>
-</html>
+{% extends "studentbase.html" %}
+{% block content %}
+<div class="w3-main" style="margin-left:340px;margin-right:40px">
+  <div class="panel-body" style="position: absolute; width: 300px; height: 200px; z-index: 15; top: 20%; left: 60%; margin: -100px 0 0 -150px;background: white; text-align: center;">
+    <h2 style="font-size: 300%">Raise Query</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" value="" placeholder="Student ID*" id="courseId" name="studentID" style="height: 50px; width: 300px;" />
+        <input type="text" value="" placeholder="Course Id*" id="password" name="courseID" style="height: 50px; width: 300px;"/>
+        <input type="text" value="" placeholder="Query*" id="courseId" name="query" style="height: 150px; width: 300px; word-break: break-word;"/>
+        <button type="submit">Submit</button>&nbsp;
+    </form>
+  </div>
+
+<!-- End page content -->
+</div>
+{% endblock %}

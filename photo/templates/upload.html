@@ -1,26 +1,14 @@
+{% extends "studentbase.html" %}
 {% load crispy_forms_tags %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="panel-info">
-      <div class ="panel-heading">
-        <div class="container" align="right">
-          <form action="/student/studenthome/">
-                <button type="submit" class="btn btn-primary">Home</button>
-            </form>
-        </div>
-        <p><h1><center>Upload<center></h1></p>
-      </div>
-      <div class="panel-body">
-          	<form action="upload" enctype="multipart/form-data" method="post" class="uniForm" style="width: 30%">
-			    {% csrf_token %}
-			    {{ form|crispy }}
-			    <button type="submit" class="btn btn-primary">Upload</button>
-			</form>
-      </div>
-    </div>
-  </body>
-</html>
+{% block content %}
+<div class="w3-main" style="margin-left:340px;margin-right:40px">
+  <div class="login-block" style="margin-top:17%">
+      <p><h1><center>Upload</center></h1></p>
+      <form action="upload" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Upload</button>
+      </form>
+  </div>
+</div>
+{% endblock %}
