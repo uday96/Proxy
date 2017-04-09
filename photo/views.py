@@ -29,7 +29,7 @@ logger = logging.getLogger('backup')
 
 class UploadPhoto(View):
 
-    template_name = 'test.html'
+    template_name = 'upload.html'
 
     def get(self, request):
         logger.info('Upload a photo')

@@ -12,6 +12,19 @@
 		    padding: 5px;
 		    text-align: left;
 		}
+		input#mydate {
+		    background:none!important;
+		    border:none; 
+		    padding:0!important;
+		    
+		    /*optional*/
+		    font-family:arial,sans-serif; /*input has OS specific font-family*/
+		    color:#069;
+		    cursor:pointer;
+		}
+		input#mydate:hover{
+		    text-decoration:underline;
+		}
 	</style>
   </head>
   <body>
@@ -20,7 +33,7 @@
         <h1><center>Attendance Summary</center></h1>
 		<p>CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>Classes Taken: <b>{{ summary.classes }}</b></p>
       </div>
-      <div class="panel-body">
+      <div class="panel-body" style="float: left;">
       		<table>
 				<caption><b>Summary<b></caption>          	
 				<tr>
@@ -30,12 +43,30 @@
 				</tr>
 				{% for datewiseatt in summary.datewise %}
 				    <tr>
-				        <td>{{datewiseatt.date}}</td>
+				        <td>
+				        	<form name="dateform" method="post" action="/attendance/summary/datewise/">
+					      		{% csrf_token %}
+					      		<input type="hidden" name="date" value="{{datewiseatt.date|date:'Y-m-d'}}">
+					      		<input type="hidden" name="courseID" value="{{ courseID }}">
+					      		<input type="hidden" name="year" value="{{ year }}">
+					      		<input type="submit" value="{{datewiseatt.date|date:'M d, Y'}}" id="mydate">
+					      	</form>
+				        </td>
 				        <td>{{datewiseatt.count_present}}</td>
 				        <td>{{datewiseatt.count_absent}}</td>
 				    </tr>
 				{% endfor %}
 			</table>
+      </div>
+      <div class="panel-body">
+      	<h4>Datewise Attendance Summary</h4>
+      	<form method="post" action="/attendance/summary/datewise/">
+      		{% csrf_token %}
+      		Date: <input type="date" name="date">
+      		<input type="hidden" name="courseID" value="{{ courseID }}">
+      		<input type="hidden" name="year" value="{{ year }}">
+      		<button type="submit">Get Summary</button>
+      	</form>
       </div>
     </div>
   </body>

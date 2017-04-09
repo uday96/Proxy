@@ -6,6 +6,8 @@ from django.views.generic.edit import UpdateView, DeleteView
 from django.http import HttpResponse
 from .models import Attendance
 import logging
+from django.views.decorators.csrf import csrf_exempt
+import datetime
 
 # Get logger
 logger = logging.getLogger('backup')
@@ -106,15 +108,39 @@ class CourseSummary(View):
     template_name = 'attendance/courseSummary.html'
 
     def get(self,request):
-        logger.info("Getting Course Summary")
+        email = request.session["email"]
+        logger.info("["+email+"] Getting Course Summary")
         try:
             courseID = request.GET.get("courseID",None)
             year = int(request.GET.get("year",None))
             logger.debug(str(courseID)+" "+str(year))
             attendanceList = Attendance.objects.filter(courseID=courseID,year=year)
             summary = proccessCourseAtt(attendanceList)
+            print summary
             context = {'summary': summary, 'courseID' : courseID,'year' : year}
             return render(request, self.template_name, context)
+        except Exception as e:
+            logger.error(str(e))
+        return HttpResponse("Error")
+
+class DateWiseSummary(View):
+
+    template_name = "attendance/datewiseSummary.html"
+
+    @csrf_exempt
+    def post(self,request):
+        email = request.session["email"]
+        logger.info("["+email+"] Getting DateWise Attendance Summary")
+        try:
+            date_str = request.POST.get("date","")
+            courseID = request.POST.get("courseID","")
+            year = int(request.POST.get("year",""))
+            date = datetime.datetime.strptime(date_str,'%Y-%m-%d')
+            logger.debug("date: "+date_str+", course: "+courseID+", year: "+str(year))
+            attendanceList = Attendance.objects.filter(courseID=courseID,year=year,date=date)
+            summary = proccessAttendance(attendanceList)
+            context = {'summary' : summary, 'courseID' : courseID, 'year' : year, 'coursedate' : date}
+            return render(request,self.template_name,context)
         except Exception as e:
             logger.error(str(e))
         return HttpResponse("Error")

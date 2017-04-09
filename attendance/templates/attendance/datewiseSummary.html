@@ -1,0 +1,85 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+		table, th, td {
+		    border: 1px solid black;
+		    border-collapse: collapse;
+		}
+		th, td {
+		    padding: 5px;
+		    text-align: left;
+		}
+	</style>
+  </head>
+  <body>
+    <div class="panel-info">
+      <div class="panel-heading">
+        <h1><center>Attendance Summary</center></h1>
+		<p>CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b></p>
+      </div>
+      <h3><center>Date: {{coursedate|date:"M d, Y"}}</center></h3>
+      <div class="panel-body" style="float: left">
+      		{% if summary.present %}
+	          	<table>
+					<caption><b>Present<b></caption>  
+					<tr>
+					    <th><b><u>Student ID</u></b></th>
+					</tr>
+				    {% for att in summary.present %}
+				    <tr>
+				        <td>
+				        	<a href="/attendance/history/{{courseID}},{{att.studentID}},{{year}}">{{att.studentID}}</a>
+				        </td>
+				    </tr>
+				    {% endfor %}    
+				</table>
+			{% else %}
+				<h5>Oops! No Students Present!</h5>
+			{% endif %}			
+      </div>
+      <div class="panel-body" style="float: left">
+      		{% if summary.absent %}
+	          	<table>
+					<caption><b>Absent<b></caption>  
+					<tr>
+					    <th><b><u>Student ID</u></b></th>
+					</tr>
+				    {% for att in summary.absent %}
+				    <tr>
+				        <td>
+				        	<a href="/attendance/history/{{courseID}},{{att.studentID}},{{year}}">{{att.studentID}}</a>
+				        </td>
+				    </tr>
+				    {% endfor %}    
+				</table>
+			{% else %}
+				<h5>Hurray! No Students Absent!</h5>
+			{% endif %}			
+      </div>
+      <div class="panel-body" style="float: left">
+      		<table>
+				<caption><b>Summary<b></caption>          	
+				<tr>
+				    <th><b><u>Attendance</u></b></th>
+				    <th><b><u>Count</u></b></th>
+				</tr>
+			    <tr>
+			        <td>Present</td>
+			        <td>{{summary.count_present}}</td>
+			    </tr>
+			    <tr>
+			        <td>Absent</td>
+			        <td>{{summary.count_absent}}</td>
+			    </tr>
+			    <tr>
+			        <td>Total</td>
+			        <td>{{summary.total}}</td>
+			    </tr>   
+			</table>
+      </div>
+    </div>
+  </body>
+</html>
