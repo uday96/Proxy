@@ -203,6 +203,8 @@ def detect_faces(course_id,year,date,img_urls):
 	faces = mappings.keys()
 	
 	students = CourseGroup.objects.filter(person_group_id = group_id)
+
+	instanceList = []
 	for each in students:
 		person_id = each.person_id
 		if person_id in people:			
@@ -213,9 +215,12 @@ def detect_faces(course_id,year,date,img_urls):
 
 			instance = 	Attendance(courseID=course_id,date=date,studentID=each.student_id,present=True,year=year,url=img_urls[0],top=rect['top'],left=rect['left'],width=rect['width'],height=rect['height'])
 			instance.save()
+			instanceList.append(instance)
 		else:
 			instance = Attendance(courseID=course_id,date=date,studentID=each.student_id,present=False,year=year)
 			instance.save()
+			instanceList.append(instance)
+	return instanceList
 
 	
 
