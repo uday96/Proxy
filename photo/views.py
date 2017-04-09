@@ -23,6 +23,8 @@ import json
 import httplib, urllib, base64
 import logging
 from login.models import Users
+from django.core import serializers
+from attendance.models import Attendance
 
 # Get logger
 logger = logging.getLogger('backup')
@@ -114,14 +116,21 @@ class UploadClassPhotos(View):
                 instance.save()
                 logger.info("Class Photo Saved")    
 
-            detect_faces(info[0],info[1],date,urls)
-            course = Course.objects.get(courseID=info[0], year=info[1])
-            prof = Users.objects.get(ID=course.profID)
+            attendanceList = list(detect_faces(info[0],info[1],date,urls))
+            attIdList = list()
+            for att in attendanceList:
+                attIdList.append(att.id)
+            print attIdList
+            request.session['attIdList'] = attIdList
+            # course = Course.objects.get(courseID=info[0], year=info[1])
+            # prof = Users.objects.get(ID=course.profID)
             
-            studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(info[0]))+"_"+str(info[1])))
+            # studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(info[0]))+"_"+str(info[1])))
             try:
-                context = {'course': course, 'prof' : prof, 'studentList' : studentList}
-                return render(request, 'prof/coursepage.html', context)
+                # context = {'course': course, 'prof' : prof, 'studentList' : studentList}
+                context = {'courseID': info[0], 'attendanceList': attendanceList, 'date': date, 'info1': info[1]}
+                print context
+                return render(request, 'attendance_display.html', context)
             except Exception as e:
                 logger.error(str(e))
             return HttpResponse("Error")
@@ -129,6 +138,41 @@ class UploadClassPhotos(View):
         else:
             logger.error("Invalid Upload Class Photo Form")
             return HttpResponse("Invalid Form!")
+
+def changeAttendance(request, attID):
+    print attID
+    att = Attendance.objects.get(id=attID)
+    if att.present == False:
+        att.present = True
+    else:
+        att.present = False
+    att.save()
+    attIdList = request.session.get('attIdList', None)
+    attendanceList = list()
+    for val in attIdList:
+        attendanceList.append(Attendance.objects.get(id=val))
+
+    try:
+        context = {'courseID': att.courseID, 'attendanceList': attendanceList, 'date': att.date, 'info1': att.year}
+        print context
+        return render(request, 'attendance_display.html', context)
+    except Exception as e:
+        logger.error(str(e))
+    return HttpResponse("Error")
+
+def finalise(request, course_info):
+    info = str(course_info).split(",")
+    course = Course.objects.get(courseID=info[0], year=info[1])
+    prof = Users.objects.get(ID=course.profID)
+    studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(info[0]))+"_"+str(info[1])))
+    try:
+        context = {'course': course, 'prof' : prof, 'studentList' : studentList}
+        print context
+        return render(request, 'coursepage.html', context)
+    except Exception as e:
+        logger.error(str(e))
+    return HttpResponse("Error")
+
 
 
 class ChangeProfilePic(View):
