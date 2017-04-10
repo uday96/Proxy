@@ -12,21 +12,29 @@
 				    <th><b><u>Present</u></b></th>
 				    <th><b><u>Absent</u></b></th>
 				</tr>
-				{% for datewiseatt in summary.datewise %}
-				    <tr>
-				        <td>
-				        	<form name="dateform" method="post" action="/attendance/summary/datewise/">
-					      		{% csrf_token %}
-					      		<input type="hidden" name="date" value="{{datewiseatt.date|date:'Y-m-d'}}">
-					      		<input type="hidden" name="courseID" value="{{ courseID }}">
-					      		<input type="hidden" name="year" value="{{ year }}">
-					      		<input type="submit" value="{{datewiseatt.date|date:'M d, Y'}}" id="mydate">
-					      	</form>
-				        </td>
-				        <td>{{datewiseatt.count_present}}</td>
-				        <td>{{datewiseatt.count_absent}}</td>
-				    </tr>
-				{% endfor %}
+				{% if summary.datewise%}
+					{% for datewiseatt in summary.datewise %}
+					    <tr>
+					        <td>
+					        	<form name="dateform" method="post" action="/attendance/summary/datewise/">
+						      		{% csrf_token %}
+						      		<input type="hidden" name="date" value="{{datewiseatt.date|date:'Y-m-d'}}">
+						      		<input type="hidden" name="courseID" value="{{ courseID }}">
+						      		<input type="hidden" name="year" value="{{ year }}">
+						      		<input type="submit" value="{{datewiseatt.date|date:'M d, Y'}}" id="mydate">
+						      	</form>
+					        </td>
+					        <td>{{datewiseatt.count_present}}</td>
+					        <td>{{datewiseatt.count_absent}}</td>
+					    </tr>
+					{% endfor %}
+				{% else %}
+					<tr>
+						<td>&nbsp</td>
+						<td>&nbsp</td>
+						<td>&nbsp</td>
+					</tr>
+				{% endif %}
 			</table>
       </div>
       <div class="panel-body" style="margin-left: 50%; margin-top: 5%">

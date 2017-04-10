@@ -7,12 +7,12 @@
 
       	<h3><center><strong>Date: {{coursedate|date:"M d, Y"}}</strong></center></h3>
       <div class="panel-body" style="float: left; margin-left: 18%;margin-top: 3%;">
-      		{% if summary.present %}
-	          	<table>
+      		<table>
 					<caption><b>Present<b></caption>  
 					<tr>
 					    <th><b><u>Student ID</u></b></th>
 					</tr>
+      		{% if summary.present %}
 				    {% for att in summary.present %}
 				    <tr>
 				        <td>
@@ -22,7 +22,9 @@
 				    {% endfor %}    
 				</table>
 			{% else %}
-				<h5>Oops! No Students Present!</h5>
+				<tr>
+					<td>&nbsp</td>
+				</tr>
 			{% endif %}			
       </div>
       <div class="panel-body" style="float: left; margin-left: 20%;margin-top: 3%;">
@@ -47,12 +49,12 @@
 			</table>
       </div>
       <div class="panel-body" style="float: left; margin-left: 20%;margin-top: 3%;">
-      		{% if summary.absent %}
-	          	<table>
+      		<table>
 					<caption><b>Absent<b></caption>  
 					<tr>
 					    <th><b><u>Student ID</u></b></th>
 					</tr>
+      		{% if summary.absent %}
 				    {% for att in summary.absent %}
 				    <tr>
 				        <td>
@@ -62,7 +64,9 @@
 				    {% endfor %}    
 				</table>
 			{% else %}
-				<h5>Hurray! No Students Absent!</h5>
+				<tr>
+					<td>&nbsp</td>
+				</tr>
 			{% endif %}			
       </div>
     </div>

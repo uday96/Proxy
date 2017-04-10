@@ -25,6 +25,7 @@ import logging
 from login.models import Users
 from django.core import serializers
 from attendance.models import Attendance
+import math
 
 # Get logger
 logger = logging.getLogger('backup')
@@ -50,16 +51,26 @@ class UploadPhoto(View):
             name = request.POST['title']
             imageList = request.FILES.getlist('image')
             i = 0
+            standard_size = 51200
             for image in imageList:
                 logger.info("["+user+"] Saving Image")
+                image_size = image._size
+                ratio = image_size/standard_size
+                root = math.sqrt(ratio)
+                root = int(math.floor(root+0.5))
                 instance = Photos(name = (str(name) + str(i)), pic= image)
                 instance.save()
                 logger.info("["+user+"] Image Saved")
                 foo = Image.open(instance.pic.url) 
-                (a,b) =  foo.size  
-                foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
-                foo.save(instance.pic.url)
-                logger.info("["+user+"] Image Resized")
+                # (a,b) =  foo.size  
+                # foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
+                # foo.save(instance.pic.url)
+                if root != 0:
+                    (a,b) =  foo.size  
+                    foo = foo.resize((a/root,b/root),Image.ANTIALIAS)
+                    foo.save(instance.pic.url)
+                    logger.info("["+user+"] Image Resized")
+
                 logger.info("["+user+"] Uploading Image to Cloud")
                 response = cloudinary.uploader.upload(instance.pic.url)
                 logger.info("["+user+"] Uploaded Image to Cloud Successfully!")
@@ -103,16 +114,26 @@ class UploadClassPhotos(View):
             urls = []
             image = imageList[0]
             # files = request.FILES.getlist('file_field')
+            standard_size = 51200
             for image in imageList:
+                image_size = image._size
+                ratio = image_size/standard_size
+                root = math.sqrt(ratio)
+                root = int(math.floor(root+0.5))
                 instance = Photos(name = course, pic= image)
                 instance.save()
                 logger.info("Image Saved")
                 logger.debug("Url: "+str(instance.pic.url))
                 foo = Image.open(instance.pic.url) 
-                (a,b) =  foo.size  
-                foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
-                foo.save(instance.pic.url)
-                logger.info("Image Resized")
+                # (a,b) =  foo.size  
+                # foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
+                # foo.save(instance.pic.url)
+                if root != 0:
+                    (a,b) =  foo.size  
+                    foo = foo.resize((a/root,b/root),Image.ANTIALIAS)
+                    foo.save(instance.pic.url)
+                    logger.info("Image Resized")
+
                 logger.info("Uploading Image to Cloud")
                 response = cloudinary.uploader.upload(instance.pic.url)
                 logger.info("Uploaded Image to Cloud Successfully!")
@@ -123,18 +144,23 @@ class UploadClassPhotos(View):
 
             attendanceList = list(detect_faces(info[0],info[1],date,urls))
             attIdList = list()
+            student_dps = []
             for att in attendanceList:
                 attIdList.append(att.id)
+                studID = att.studentID
+                studentOb = Users.objects.get(ID=studID,role="S")
+                student_dps.append(studentOb.profilePicURL)
             print attIdList
             request.session['attIdList'] = attIdList
-            # course = Course.objects.get(courseID=info[0], year=info[1])
-            # prof = Users.objects.get(ID=course.profID)
+            course = Course.objects.get(courseID=info[0], year=info[1])
+            prof = Users.objects.get(ID=course.profID)
             
+            finalData = zip(attendanceList,student_dps)
             # studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(info[0]))+"_"+str(info[1])))
             try:
                 # context = {'course': course, 'prof' : prof, 'studentList' : studentList}
-                context = {'courseID': info[0], 'attendanceList': attendanceList, 'date': date, 'info1': info[1]}
-                print context
+                context = {'courseID': info[0], 'attendanceList': finalData, 'date': date, 'info1': info[1],'prof':prof}
+                logger.debug(str(context))
                 return render(request, 'attendance_display.html', context)
             except Exception as e:
                 logger.error(str(e))
@@ -144,40 +170,54 @@ class UploadClassPhotos(View):
             logger.error("Invalid Upload Class Photo Form")
             return HttpResponse("Invalid Form!")
 
-def changeAttendance(request, attID):
-    print attID
-    att = Attendance.objects.get(id=attID)
-    if att.present == False:
-        att.present = True
-    else:
-        att.present = False
-    att.save()
-    attIdList = request.session.get('attIdList', None)
-    attendanceList = list()
-    for val in attIdList:
-        attendanceList.append(Attendance.objects.get(id=val))
 
-    try:
-        context = {'courseID': att.courseID, 'attendanceList': attendanceList, 'date': att.date, 'info1': att.year}
-        print context
-        return render(request, 'attendance_display.html', context)
-    except Exception as e:
-        logger.error(str(e))
-    return HttpResponse("Error")
+class changeAttendance(View):
 
-def finalise(request, course_info):
-    info = str(course_info).split(",")
-    course = Course.objects.get(courseID=info[0], year=info[1])
-    prof = Users.objects.get(ID=course.profID)
-    studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(info[0]))+"_"+str(info[1])))
-    try:
-        context = {'course': course, 'prof' : prof, 'studentList' : studentList}
-        print context
-        return render(request, 'coursepage.html', context)
-    except Exception as e:
-        logger.error(str(e))
-    return HttpResponse("Error")
+    template_name = 'attendance_display.html'
 
+    def post(self,request):
+        email = request.session["email"]
+        try:
+            attID = int(request.POST.get("attID",None))
+            att = Attendance.objects.get(id=attID)
+            logger.info("["+email+"] Changing attendance for "+str(att))
+            if att.present == False:
+                att.present = True
+            else:
+                att.present = False
+            att.save()
+            attIdList = request.session.get('attIdList', None)
+            attendanceList = list()
+            for val in attIdList:
+                attendanceList.append(Attendance.objects.get(id=val))
+            prof = Users.objects.get(email=email,role="T")
+            context = {'courseID': att.courseID, 'attendanceList': attendanceList, 'date': att.date, 'info1': att.year,'prof':prof}
+            logger.debug(str(context))
+            return render(request,self.template_name, context)
+        except Exception as e:
+            logger.error(str(e))
+        return HttpResponse("Error")
+
+class finalise(View):
+
+    template_name = 'coursepage.html'
+
+    def post(self,request):
+        try:
+            email = request.session["email"]
+            logger.info("["+email+"] Finalising Attendance")
+            courseID = request.POST.get("courseID",None)
+            year = int(request.POST.get("year",None))
+            course = Course.objects.get(courseID=courseID, year=year)
+            logger.debug("Course: "+str(course))
+            prof = Users.objects.get(ID=course.profID,role="T")
+            studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(courseID))+"_"+str(year)))
+            context = {'course': course, 'prof' : prof, 'studentList' : studentList}
+            logger.debug(str(context))
+            return render(request,self.template_name,context)
+        except Exception as e:
+            logger.error(str(e))
+        return HttpResponse("Error")
 
 
 class ChangeProfilePic(View):

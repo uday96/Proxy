@@ -1,46 +1,103 @@
+{% load staticfiles %}
+
 <!DOCTYPE html>
 <html>
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-		table, th, td {
-		    border: 1px solid black;
-		    border-collapse: collapse;
-		}
-		th, td {
-		    padding: 5px;
-		    text-align: left;
-		}
-	</style>
-  </head>
-  <body>
-    <div class="panel-info">
-      <div class="panel-heading">
-        <h1><center>Authenticate Photos</center></h1>
-      </div>
-      <div class="panel-body">
+<head>
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+<link href="{% static 'login/style.css' %}" rel="stylesheet">
+<meta charset="UTF-8">
+<style>
+	table, th, td {
+	    border: 1px solid black;
+	    border-collapse: collapse;
+	    background-color: white;
+	}
+	th, td {
+	    padding: 5px;
+	    text-align: left;
+	}
+	th{
+		background: #ff656c;
+		color: white;
+	}
+	button#acpt {
+    width: 15%;
+    height: 40px;
+    background:#c9cacc ;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid #c9cacc;
+    color: black;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-family: Montserrat;
+    outline: none;
+    cursor: pointer;
+  }
+
+  button#acpt:hover {
+    background: #ff656c;
+    color: white;
+    border-radius: 5px;
+    border: 1px solid #008080;
+  }
+  button {
+    width: 15%;
+    height: 40px;
+    background:#ff656c;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid #c9cacc;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-family: Montserrat;
+    outline: none;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background:white;
+    color: black;
+    border-radius: 5px;
+    border: 1px solid #008080;
+  }
+</style>
+<title>Login</title>
+
+</head>
+
+<body>
+<div>
+	<form method="get" action="/administrator/"><button type="submit" style="width: 10%;margin-left: 85%">Home</button></form>
+</div>
+<div class="transbox">
+    <p style="text-align: center; color: #ffffff; font-size: 300%;">Authenticate Photos</p>
+
+</div>
+<div class="w3-main" style="margin-left:38%; ">
       		{% if Photos %}
 	          	<table>
 					<tr>
-					    <th><b><u>Profile Pic</u></b></th>
-					    <th><b><u>Student ID</u></b></th>
-					    <th><b><u>Uploaded Image</u></b></th>
-					    <th><b><u>Action</u></b></th>
+					    <th><b>Profile Pic</b></th>
+					    <th><b>Student ID</b></th>
+					    <th><b>Uploaded Image</b></th>
+					    <th><b>Action</b></th>
 					</tr>
 				    {% for photo in Photos%}
 				    <tr>
 				        <td><img src="{{photo.profilePicURL}}" width="95" height="95"></td>
 				        <td>{{photo.studentID}}</td>
 				        <td><img src="{{photo.url}}" width="95" height="95"></td>
-				        <td><form method="post" action="/auth/{{photo.ID}},1"><button type="submit">Accept</button></form><br><form method="post" action="/auth/{{photo.ID}},0"><button type="submit">Reject</button></form></td>
+				        <td><form method="post" action="/auth/{{photo.ID}},1"><button id="acpt" type="submit" style="width: 100%">Accept</button></form><br><form method="post" action="/auth/{{photo.ID}},0"><button id="acpt" type="submit" style="width: 100%">Reject</button></form></td>
 				    </tr>
 				    {% endfor %}    
 				</table>
 			{% else %}
-				<h3>No Photos to Authenticate</h3>
+				<h2>No Photos to Authenticate</h2>
 			{% endif %}		
 			{% csrf_token %}	
-      </div>
-    </div>
-  </body>
-</html>
+</div>
+</body>
