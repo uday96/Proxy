@@ -1,10 +1,9 @@
 {% extends "studentbase.html" %}
 {% block content %}
-	<div>
+	<div class="w3-main" style="margin-left: 340px;margin-right: 40px">
         <h1><center>Attendance History</center></h1>
-		<p>CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>StudentID: <b>{{ studentID }}</b></p>
-    </div>
-    <div>
+		<p style="text-align: center;">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>StudentID: <b>{{ studentID }}</b></p>
+    <div class="panel-body" style="text-align: center;">
       	<table style="width: 100%">
 			<tr>
 			    <th><b><u>Date</u></b></th>
@@ -32,4 +31,5 @@
       <div>
 		<a href="/attendance/summary/individual?courseID={{ courseID }}&studentID={{ studentID }}&year={{ year }}" class="btn btn-primary">Get Summary</a>
       </div>
+    </div>
 {% endblock %}
