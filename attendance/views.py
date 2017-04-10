@@ -94,11 +94,10 @@ def showImage(request, attID):
     return HttpResponse("Error")
 
 class IndividualSummary(View):
-    
-    template_name = 'attendance/individualSummary.html'
 
     def get(self,request):
-        logger.info("Getting Individual Summary")
+        email = request.session["email"]
+        logger.info("["+email+"] Getting Individual Summary")
         try:
             courseID = request.GET.get("courseID",None)
             studentID = request.GET.get("studentID",None)
@@ -106,8 +105,17 @@ class IndividualSummary(View):
             logger.debug(str(courseID)+" "+str(studentID)+" "+str(year))
             attendanceList = Attendance.objects.filter(courseID=courseID,studentID=studentID,year=year)
             summary = proccessAttendance(attendanceList)
-            context = {'summary': summary, 'courseID' : courseID, 'studentID' : studentID, 'year' : year}
-            return render(request, self.template_name, context)
+            user = Users.objects.get(email=email)
+            role = user.role
+            if role=="S":
+                context = {'summary': summary, 'courseID' : courseID, 'studentID' : studentID, 'year' : year,'student':user}
+                return render(request,'attendance/individualSummary_student.html', context)    
+            elif role=="T":
+                context = {'summary': summary, 'courseID' : courseID, 'studentID' : studentID, 'year' : year,'prof':user}
+                return render(request,'attendance/individualSummary_prof.html', context)    
+            else:
+                logger.error("["+email+"] No Access Rights!")
+                return HttpResponse("No Access Rights!")
         except Exception as e:
             logger.error(str(e))
         return HttpResponse("Error")
@@ -125,8 +133,9 @@ class CourseSummary(View):
             logger.debug(str(courseID)+" "+str(year))
             attendanceList = Attendance.objects.filter(courseID=courseID,year=year)
             summary = proccessCourseAtt(attendanceList)
-            print summary
-            context = {'summary': summary, 'courseID' : courseID,'year' : year}
+            prof = Users.objects.get(email=email,role="T")
+            logger.debug("Role: "+str(prof.role))
+            context = {'summary': summary, 'courseID' : courseID,'year' : year,'prof':prof}
             return render(request, self.template_name, context)
         except Exception as e:
             logger.error(str(e))
@@ -148,7 +157,9 @@ class DateWiseSummary(View):
             logger.debug("date: "+date_str+", course: "+courseID+", year: "+str(year))
             attendanceList = Attendance.objects.filter(courseID=courseID,year=year,date=date)
             summary = proccessAttendance(attendanceList)
-            context = {'summary' : summary, 'courseID' : courseID, 'year' : year, 'coursedate' : date}
+            prof = Users.objects.get(email=email,role="T")
+            logger.debug("Role: "+str(prof.role))
+            context = {'summary' : summary, 'courseID' : courseID, 'year' : year, 'coursedate' : date,'prof':prof}
             return render(request,self.template_name,context)
         except Exception as e:
             logger.error(str(e))

@@ -1,26 +1,11 @@
-{% load crispy_forms_tags %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-		table, th, td {
-		    border: 1px solid black;
-		    border-collapse: collapse;
-		}
-		th, td {
-		    padding: 5px;
-		    text-align: left;
-		}
-	</style>
-  </head>
-  <body>
-    <div class="panel-info">
-      <div class="panel-heading">
+{% extends "profbase.html" %}
+{% block content %}
+	<div class="w3-main" style="margin-left: 340px;margin-right: 40px">
+
         <h1><center>Attendance Summary</center></h1>
-		<p>CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b></p>
-      </div>
-      <h3><center>Date: {{coursedate|date:"M d, Y"}}</center></h3>
+		<p style="text-align: center;">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b></p>
+
+      	<h3><center>Date: {{coursedate|date:"M d, Y"}}</center></h3>
       <div class="panel-body" style="float: left">
       		{% if summary.present %}
 	          	<table>
@@ -81,5 +66,4 @@
 			</table>
       </div>
     </div>
-  </body>
-</html>
+{% endblock %}

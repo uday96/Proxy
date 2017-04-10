@@ -52,7 +52,6 @@ class LoginHome(View):
 	@csrf_exempt
 	def post(self, request, **kwargs):
 		print 'Login post'
-		print request.POST
 		form = UserLoginForm(request.POST)
 		if form.is_valid():
 			logger.info("Valid Login Form")

@@ -1,27 +1,10 @@
-{% load crispy_forms_tags %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-		table, th, td {
-		    border: 1px solid black;
-		    border-collapse: collapse;
-		}
-		th, td {
-		    padding: 5px;
-		    text-align: left;
-		}
-	</style>
-  </head>
-  <body>
-    <div class="panel-info">
-      <div class="panel-heading">
+{% extends "profbase.html" %}
+{% block content %}
+	<div class="w3-main" style="margin-left: 340px;margin-right: 40px">
         <h1><center>Attendance Summary</center></h1>
-		<p>CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>StudentID: <b>{{ studentID }}</b></p>
-      </div>
-      <div class="panel-body">
-      		{% if summary.present %}
+		<p style="text-align: center;">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>StudentID: <b>{{ studentID }}</b></p>
+		<div class="panel-body" style="text-align: center;">
+			{% if summary.present %}
 	          	<table>
 					<caption><b>Present<b></caption>  
 					<tr>
@@ -39,10 +22,10 @@
 				</table>
 			{% else %}
 				<h5>Oops! No classes Present!</h5>
-			{% endif %}			
-      </div>
-      <div class="panel-body">
-      		{% if summary.absent %}
+			{% endif %}
+		</div>
+		<div class="panel-body" style="text-align: center;">
+			{% if summary.absent %}
 	          	<table>
 					<caption><b>Absent<b></caption>          	
 					<tr>
@@ -61,8 +44,9 @@
 			{% else %}
 				<h5>Hurray! No classes Absent!</h5>
 			{% endif %}			
-      </div>
-      <div class="panel-body">
+		</div>
+	</div>
+	<div class="panel-body" style="text-align: center;">
       		<table>
 				<caption><b>Summary<b></caption>          	
 				<tr>
@@ -83,6 +67,4 @@
 			    </tr>   
 			</table>
       </div>
-    </div>
-  </body>
-</html>
+{% endblock %}
