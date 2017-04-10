@@ -64,7 +64,7 @@ body {font-size:16px;background-color: #c9cacc;}
     border: 3px solid #008080;
   }
 </style>
-<body>
+<body onload="changeColor()">
 
 <!-- Sidebar/menu -->
 <nav class="w3-sidebar w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold; background-color: #008080;" id="mySidebar"><br>
@@ -101,6 +101,20 @@ body {font-size:16px;background-color: #c9cacc;}
 <!--div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"><p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p></div-->
 
 <script>
+function changeColor() {
+  var links = document.getElementsByTagName('a');
+  var pathName = window.location.href;
+    for(var i = 0; i < links.length; i++) {
+        var thisLink = links[i];
+        var source = thisLink.href;
+        if(pathName.indexOf(source)>-1) {
+          thisLink.href = "#";
+          thisLink.style.backgroundColor = "#f24935";
+          thisLink.className = "w3-bar-item w3-button w3-hover-red";
+          break;
+        }
+    }
+}
 // Script to open and close sidebar
 function w3_open() {
     document.getElementById("mySidebar").style.display = "block";
