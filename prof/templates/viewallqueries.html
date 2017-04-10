@@ -1,8 +1,8 @@
 {% extends "profbase.html" %}
 {% block content %}
 <div class="w3-main" style="margin-left:340px;margin-right:40px">
-	<h1><center>View Queries</center></h1>
-	<p style="text-align: center;">ProfessorId : {{profID}}</p>
+	<h1 style="font-size: 300%"><center>View Queries</center></h1>
+	<p style="text-align: center;font-size: 130%">ProfessorId : <strong>{{profID}}</strong></p>
 	<div class="panel-body" style="text-align: center;">
 		{% if query_list %}
 		    <ul>
@@ -10,18 +10,18 @@
 		        <li style="background-color: #b2806e">
 		        <form action="/prof/resolvequery/{{query.id}}">
 			        	<p style="font-weight: bold;">
-				        	Date : {{query.date|date:"M d, Y"}}<br>
-				        	StudentID : {{query.studentID}}<br>
-				        	CourseID : {{query.courseID}}<br>
-				        	Query : {{query.query}}<br>
-				        	Resolved : {{query.resolved}}<br>
+				        	<b>Date</b> : {{query.date|date:"M d, Y"}}<br>
+				        	<b>StudentID</b> : {{query.studentID}}<br>
+				        	<b>CourseID</b> : {{query.courseID}}<br>
+				        	<b>Query</b> : {{query.query}}<br>
+				        	<b>Resolved</b> : {{query.resolved}}<br>
 				        	<button type="submit" class="btn btn-primary">Resolve</button>
 		        	</p>
 		        </li>
 		    {% endfor %}
 		    </ul>
 		{% else %}
-		    <p>No Queries</p>
+		    <h2>No Queries</h2>
 		{% endif %}
 	</div>
 </div>

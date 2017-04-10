@@ -1,8 +1,8 @@
 {% extends "profbase.html" %}
 {% block content %}
 	<div class="w3-main" style="margin-left: 340px;margin-right: 40px">
-        <h1><center>Attendance History</center></h1>
-		<p style="text-align: center;">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>StudentID: <b>{{ studentID }}</b></p>
+        <h1 style="font-size: 300%"><center>Attendance History</center></h1>
+		<p style="text-align: center;font-size: 120%">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>StudentID: <b>{{ studentID }}</b></p>
     <div class="panel-body" style="text-align: center;">
       	<table style="width: 100%">
 			<tr>
@@ -29,7 +29,13 @@
 		</table>
       </div>
       <div>
-		<a href="/attendance/summary/individual?courseID={{ courseID }}&studentID={{ studentID }}&year={{ year }}" class="btn btn-primary">Get Summary</a>
+      	<form action="/attendance/summary/individual/" method="get">
+      		<input type="hidden" name="courseID" value="{{ courseID }}">
+      		<input type="hidden" name="studentID" value="{{ studentID }}">
+      		<input type="hidden" name="year" value="{{ year }}">	
+      		<p></p>
+			<button type="submit">Get Summary</button>
+		</form>
       </div>
     </div>
 {% endblock %}

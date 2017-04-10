@@ -1,10 +1,10 @@
 {% extends "profbase.html" %}
 {% block content %}
 	<div class="w3-main" style="margin-left: 340px;margin-right: 40px">
-        <h1><center>Attendance Summary</center></h1>
-		<p style="text-align: center;">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>Classes Taken: <b>{{ summary.classes }}</b></p>
+        <h1 style="font-size: 300%;"><center>Attendance Summary</center></h1>
+		<p style="font-size: 120%; text-align: center;">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>Classes Taken: <b>{{ summary.classes }}</b></p>
       
-      <div class="panel-body" style="float: left;">
+      <div class="panel-body" style="float: left;margin-left: 25%; margin-top: 4%">
       		<table>
 				<caption><b>Summary<b></caption>          	
 				<tr>
@@ -29,14 +29,15 @@
 				{% endfor %}
 			</table>
       </div>
-      <div class="panel-body">
-      	<h4>Datewise Attendance Summary</h4>
+      <div class="panel-body" style="margin-left: 50%; margin-top: 5%">
+      	<h3>Datewise Attendance Summary</h3>
       	<form method="post" action="/attendance/summary/datewise/">
       		{% csrf_token %}
-      		Date: <input type="date" name="date">
+      		Date: <input type="date" name="date" id="formdate">
       		<input type="hidden" name="courseID" value="{{ courseID }}">
       		<input type="hidden" name="year" value="{{ year }}">
-      		<button type="submit">Get Summary</button>
+      		<p></p>
+      		<button type="submit" style="width: 25%">Get Summary</button>
       	</form>
       </div>
 	</div>

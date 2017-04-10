@@ -2,11 +2,11 @@
 {% block content %}
 	<div class="w3-main" style="margin-left: 340px;margin-right: 40px">
 
-        <h1><center>Attendance Summary</center></h1>
-		<p style="text-align: center;">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b></p>
+        <h1 style="font-size: 300%"><center>Attendance Summary</center></h1>
+		<p style="text-align: center;font-size: 120%">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b></p>
 
-      	<h3><center>Date: {{coursedate|date:"M d, Y"}}</center></h3>
-      <div class="panel-body" style="float: left">
+      	<h3><center><strong>Date: {{coursedate|date:"M d, Y"}}</strong></center></h3>
+      <div class="panel-body" style="float: left; margin-left: 18%;margin-top: 3%;">
       		{% if summary.present %}
 	          	<table>
 					<caption><b>Present<b></caption>  
@@ -25,26 +25,7 @@
 				<h5>Oops! No Students Present!</h5>
 			{% endif %}			
       </div>
-      <div class="panel-body" style="float: left">
-      		{% if summary.absent %}
-	          	<table>
-					<caption><b>Absent<b></caption>  
-					<tr>
-					    <th><b><u>Student ID</u></b></th>
-					</tr>
-				    {% for att in summary.absent %}
-				    <tr>
-				        <td>
-				        	<a href="/attendance/history/{{courseID}},{{att.studentID}},{{year}}">{{att.studentID}}</a>
-				        </td>
-				    </tr>
-				    {% endfor %}    
-				</table>
-			{% else %}
-				<h5>Hurray! No Students Absent!</h5>
-			{% endif %}			
-      </div>
-      <div class="panel-body" style="float: left">
+      <div class="panel-body" style="float: left; margin-left: 20%;margin-top: 3%;">
       		<table>
 				<caption><b>Summary<b></caption>          	
 				<tr>
@@ -64,6 +45,25 @@
 			        <td>{{summary.total}}</td>
 			    </tr>   
 			</table>
+      </div>
+      <div class="panel-body" style="float: left; margin-left: 20%;margin-top: 3%;">
+      		{% if summary.absent %}
+	          	<table>
+					<caption><b>Absent<b></caption>  
+					<tr>
+					    <th><b><u>Student ID</u></b></th>
+					</tr>
+				    {% for att in summary.absent %}
+				    <tr>
+				        <td>
+				        	<a href="/attendance/history/{{courseID}},{{att.studentID}},{{year}}">{{att.studentID}}</a>
+				        </td>
+				    </tr>
+				    {% endfor %}    
+				</table>
+			{% else %}
+				<h5>Hurray! No Students Absent!</h5>
+			{% endif %}			
       </div>
     </div>
 {% endblock %}

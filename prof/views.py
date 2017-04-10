@@ -231,7 +231,7 @@ class ResolveQuery(View):
 
 class UpdateAttendace(View):
 
-    template_name = 'add.html'
+    template_name = 'updateatt.html'
 
     @method_decorator(assess_role_prof)
     def dispatch(self, request):

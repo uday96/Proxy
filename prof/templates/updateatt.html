@@ -6,9 +6,10 @@
     <h2 style="font-size: 300%; text-align: center;">{{header}}</h2>
     <form method="post" class="uniForm" style="width: 30%; text-align: center;">
       {% csrf_token %}
+      Date* <input type="date" name="date" id="formdate">
       {{ form|crispy }}
       <br>
-      <button type="submit" class="btn btn-primary" style="font-weight: bold; border-radius: 2px;width: 100%">Submit</button>
+      <button type="submit" style="font-weight: bold; border-radius: 2px;width: 100%">Submit</button>
     </form>
   </div>
 </div>

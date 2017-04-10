@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import UploadFileForm,ClassPhotoForm
+from .forms import UploadFileForm,ClassPhotoForm,UploadProfilePicFileForm
 from .models import *
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -86,7 +86,10 @@ class UploadClassPhotos(View):
         form = ClassPhotoForm()
         email = request.session.get('email')
         prof = Users.objects.get(email=email)
-        return render(request,self.template_name,{'form' : form, 'prof': prof })
+        info = str(course_info).split(",")
+        courseID = str.lower(info[0])
+        year = str(info[1])
+        return render(request,self.template_name,{'form' : form, 'prof': prof, 'courseID':courseID,'year':year})
 
     def post(self, request,course_info, **kwargs):
         form = ClassPhotoForm(request.POST, request.FILES)
@@ -94,7 +97,7 @@ class UploadClassPhotos(View):
         group_id = str.lower(info[0]) + "_" + str(info[1])
         if form.is_valid():
             logger.info('Valid Upload Class Photo Form')
-            course = request.POST['course']
+            course = group_id
             date = request.POST['date']
             imageList = request.FILES.getlist('image')
             urls = []
@@ -185,11 +188,11 @@ class ChangeProfilePic(View):
         logger.info('Change Profile Pic')
         email = request.session["email"]
         student = Users.objects.get(email=email,role="S")
-        form = UploadFileForm()
+        form = UploadProfilePicFileForm()
         return render(request,self.template_name,{'form' : form,'student':student,'upload_header':"Upload Profile Pic"})
 
     def post(self, request, **kwargs):
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadProfilePicFileForm(request.POST, request.FILES)
         user = request.session['email']
         if form.is_valid():
             logger.info("["+user+"] Valid Change Profile Pic Form")
