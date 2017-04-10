@@ -1,0 +1,45 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="panel-info">
+      <div class="panel-heading">
+        <h1><center>Check Attendance</center></h1>
+		<p>CourseID: <b>{{ courseID }}</b><br>Date: <b>{{ date }}</b></p>
+      </div>
+      <div class="panel-body">
+          	<table style="width: 100%">
+				<tr>
+				    <th><b><u>StudentId</u></b></th>
+				    <th><b><u>Present</u></b></th>
+				    <th><b><u>Image Url</u></b></th>
+				    <th><b><u>Revert</u></b></th>
+				</tr>
+
+				{% if attendanceList %}
+				    {% for att in attendanceList %}
+				    <tr>
+				        <td>{{att.studentID}}</td>
+				        <td>{{att.present}}</td>
+				        {% if att.present %}
+				        <td><a href="/attendance/showImage/{{att.id}}">Click Here</a></td>
+				        {% else %}
+				        <td>No Link</td>
+				    	{% endif %}
+				    	<td><a href="/photo/change_attendance/{{att.id}}">Change</a></td>
+				    </tr>
+				    {% endfor %}    
+				{% else %}
+				    <p>No History</p>
+				{% endif %}
+			</table>
+      </div>
+      <div class="panel-body">
+			<a href="/photo/finalise_attendance/{{courseID}},{{info1}}">Finalise</a>
+      </div>
+    </div>
+  </body>
+</html>
