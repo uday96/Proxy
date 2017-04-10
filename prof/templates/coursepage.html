@@ -1,29 +1,14 @@
-{% load crispy_forms_tags %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="panel-info">
-	    <div class="panel-heading">
-	    	<div class="container" align="right">
-		    	<form action="/prof/profhome/">
-				    <button type="submit" class="btn btn-primary">Home</button>
-				</form>
-			</div>
-			
-	    	<h1><center>Course Details</center></h1>
-
-			<p>Name: {{ course.name }}</p>
-			<p>ID: {{ course.courseID }}</p>
-			<p>Dept: {{ course.deptID }}</p>
-			<p>Room: {{ course.room }}</p>
-			<p>Professor Name: {{ prof.name }}</p>
-	      
-	    </div>
-	    <div class="panel-body">
-			<h2>Students Enrolled</h2>
+{% extends "profbase.html" %}
+{% block content %}
+<div class="w3-main" style="margin-left:340px;margin-right:40px">
+	<h1><center>Course Details</center></h1>
+			<p style="text-align: center;">Name: {{ course.name }}</p>
+			<p style="text-align: center;">ID: {{ course.courseID }}</p>
+			<p style="text-align: center;">Dept: {{ course.deptID }}</p>
+			<p style="text-align: center;">Room: {{ course.room }}</p>
+			<p style="text-align: center;">Professor Name: {{ prof.name }}</p>
+	<div class="panel-body">
+			<h2 style="text-align: center;">Students Enrolled</h2>
 			{% if studentList %}
 			    <ul>
 			    {% for student in studentList %}
@@ -46,7 +31,6 @@
 		</div>
 		<div class="panel-body">
 			<a href="/attendance/summary/course?courseID={{ course.courseID }}&year={{ course.year }}" class="btn btn-primary">Get Course Summary</a>
-      </div>
-	</div>
-  </body>
-</html>
+    </div>
+</div>
+{% endblock %}
