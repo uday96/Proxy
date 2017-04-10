@@ -68,7 +68,7 @@ def history(request, info):
     try:
         user = Users.objects.get(email=email)
         role = user.role
-        attendanceList = Attendance.objects.filter(courseID=courseID, studentID=studentID, year=year)
+        attendanceList = Attendance.objects.filter(courseID=courseID, studentID=studentID, year=year).order_by('-date')
         if role=="S":
             context = {'attendance_list': attendanceList, 'courseID' : courseID, 'studentID' : studentID, 'year' : year,'student':user}
             return render(request, 'attendance/history_student.html', context)
@@ -103,7 +103,7 @@ class IndividualSummary(View):
             studentID = request.GET.get("studentID",None)
             year = int(request.GET.get("year",None))
             logger.debug(str(courseID)+" "+str(studentID)+" "+str(year))
-            attendanceList = Attendance.objects.filter(courseID=courseID,studentID=studentID,year=year)
+            attendanceList = Attendance.objects.filter(courseID=courseID,studentID=studentID,year=year).order_by('-date')
             summary = proccessAttendance(attendanceList)
             user = Users.objects.get(email=email)
             role = user.role
@@ -131,7 +131,7 @@ class CourseSummary(View):
             courseID = request.GET.get("courseID",None)
             year = int(request.GET.get("year",None))
             logger.debug(str(courseID)+" "+str(year))
-            attendanceList = Attendance.objects.filter(courseID=courseID,year=year)
+            attendanceList = Attendance.objects.filter(courseID=courseID,year=year).order_by('-date')
             summary = proccessCourseAtt(attendanceList)
             prof = Users.objects.get(email=email,role="T")
             logger.debug("Role: "+str(prof.role))

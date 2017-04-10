@@ -103,7 +103,11 @@ class ViewQueries(View):
 		try:
 			student = Users.objects.get(email=email,role="S")
 			studentID = student.ID
-			allqueries = Queries.objects.filter(studentID=studentID)
+			allqueries = []
+			resolved_queries = Queries.objects.filter(studentID=studentID,resolved=True).order_by('-date')
+			unresolved_queries = Queries.objects.filter(studentID=studentID,resolved=False).order_by('-date')
+			allqueries.extend(unresolved_queries)
+			allqueries.extend(resolved_queries)
 			logger.info("["+email+"] Queries Retrieved")
 			return render(request,self.template_name,{'student' : student ,'query_list' : allqueries })
 		except Exception as e:
