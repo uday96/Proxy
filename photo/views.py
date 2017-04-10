@@ -38,7 +38,7 @@ class UploadPhoto(View):
         email = request.session["email"]
         student = Users.objects.get(email=email,role="S")
         form = UploadFileForm()
-        return render(request,self.template_name,{'form' : form,'student':student })
+        return render(request,self.template_name,{'form' : form,'student':student,'upload_header':"Upload Photos" })
 
     def post(self, request, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)
@@ -186,7 +186,7 @@ class ChangeProfilePic(View):
         email = request.session["email"]
         student = Users.objects.get(email=email,role="S")
         form = UploadFileForm()
-        return render(request,self.template_name,{'form' : form,'student':student })
+        return render(request,self.template_name,{'form' : form,'student':student,'upload_header':"Upload Profile Pic"})
 
     def post(self, request, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)
