@@ -5,7 +5,7 @@
     <h2 style="font-size: 300%">Raise Query</h2>
     <form method="post">
         {% csrf_token %}
-        <input type="text" value="" placeholder="Student ID*" id="courseId" name="studentID" style="height: 50px; width: 300px;" />&nbsp;
+        <input type="hidden" value="{{student.ID}}" placeholder="Student ID*" id="courseId" name="studentID" style="height: 50px; width: 300px;" />&nbsp;
         <input type="text" value="" placeholder="Course Id*" id="password" name="courseID" style="height: 50px; width: 300px;"/>&nbsp;
         <input type="text" value="" placeholder="Query*" id="courseId" name="query" style="height: 150px; width: 300px; word-break: break-word;"/>
         <button type="submit" style="font-weight: bold; border-radius: 2px;">Submit</button>

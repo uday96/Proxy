@@ -5,6 +5,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, DeleteView
 from django.http import HttpResponse
 from .models import Attendance
+from login.models import Users
 import logging
 from django.views.decorators.csrf import csrf_exempt
 import datetime
@@ -61,17 +62,25 @@ def proccessCourseAtt(attendanceList):
 
 
 def history(request, info):
-    logger.info("Attendance History")
+    email = request.session["email"]
+    logger.info("["+email+"] Attendance History")
     [courseID, studentID, year] = info.split(',')
     try:
+        user = Users.objects.get(email=email)
+        role = user.role
         attendanceList = Attendance.objects.filter(courseID=courseID, studentID=studentID, year=year)
-        context = {'attendance_list': attendanceList, 'courseID' : courseID, 'studentID' : studentID, 'year' : year}
-        return render(request, 'attendance/history.html', context)
+        if role=="S":
+            context = {'attendance_list': attendanceList, 'courseID' : courseID, 'studentID' : studentID, 'year' : year,'student':user}
+            return render(request, 'attendance/history_student.html', context)
+        elif role=="T":
+            context = {'attendance_list': attendanceList, 'courseID' : courseID, 'studentID' : studentID, 'year' : year,'prof':user}
+            return render(request, 'attendance/history_prof.html', context)
+        else:
+            logger.error("["+email+"] No Access Rights!")
+            return HttpResponse("No Access Rights!")        
     except Exception as e:
         logger.error("Failed to Retrieve Attendance History")
         logger.error(str(e))
-    # context = {'course_list': courseList, 'prof' : prof}
-    # return render(request, 'prof/homepage.html', context)
     return HttpResponse("Error")
 
 def showImage(request, attID):

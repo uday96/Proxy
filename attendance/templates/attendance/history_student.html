@@ -1,0 +1,35 @@
+{% extends "studentbase.html" %}
+{% block content %}
+	<div>
+        <h1><center>Attendance History</center></h1>
+		<p>CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>StudentID: <b>{{ studentID }}</b></p>
+    </div>
+    <div>
+      	<table style="width: 100%">
+			<tr>
+			    <th><b><u>Date</u></b></th>
+			    <th><b><u>Present</u></b></th>
+			    <th><b><u>Image Url</u></b></th>
+			</tr>
+
+			{% if attendance_list %}
+			    {% for att in attendance_list %}
+			    <tr>
+			        <td>{{att.date|date:"M d, Y"}}</td>
+			        <td>{{att.present}}</td>
+			        {% if att.present %}
+			        <td><a href="/attendance/showImage/{{att.id}}" target="_blank">Click Here</a></td>
+			        {% else %}
+			        <td>No Link</td>
+			    	{% endif %}
+			    </tr>
+			    {% endfor %}    
+			{% else %}
+			    <p>No History</p>
+			{% endif %}
+		</table>
+      </div>
+      <div>
+		<a href="/attendance/summary/individual?courseID={{ courseID }}&studentID={{ studentID }}&year={{ year }}" class="btn btn-primary">Get Summary</a>
+      </div>
+{% endblock %}
