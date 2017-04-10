@@ -10,15 +10,16 @@
 	<div class="panel-body">
 			<h2 style="text-align: center;">Students Enrolled</h2>
 			{% if studentList %}
-			    <ul>
+			    <ul style="overflow: hidden;">
 			    {% for student in studentList %}
-			        <li><a href="/attendance/history/{{course.courseID}},{{ student.student_id }},{{course.year}}">{{ student.student_id }}</a></li>
+			        <li style="width: 10%; float: left; margin: 0 2% 6% 0; display: block; position: relative;"><a href="/attendance/history/{{course.courseID}},{{ student.student_id }},{{course.year}}">{{ student.student_id }}</a></li>
 			    {% endfor %}
 			    </ul>
 			{% else %}
 			    <p>No Students</p>
 			{% endif %}
 	    	{% csrf_token %}
+	    	<br>
 	    	<form action="/prof/addStudents/{{ course.courseID }},{{ course.year }}/">
 			    <button type="submit" class="btn btn-primary">Add Students</button>
 			</form>		
@@ -30,7 +31,7 @@
 			</form>
 		</div>
 		<div class="panel-body">
-			<a href="/attendance/summary/course?courseID={{ course.courseID }}&year={{ course.year }}" class="btn btn-primary">Get Course Summary</a>
+			<button><a href="/attendance/summary/course?courseID={{ course.courseID }}&year={{ course.year }}" class="btn btn-primary">Get Course Summary</a></button>
     </div>
 </div>
 {% endblock %}

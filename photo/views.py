@@ -84,7 +84,9 @@ class UploadClassPhotos(View):
     def get(self, request,course_info):
         logger.info('Upload a class photo')        
         form = ClassPhotoForm()
-        return render(request,self.template_name,{'form' : form })
+        email = request.session.get('email')
+        prof = Users.objects.get(email=email)
+        return render(request,self.template_name,{'form' : form, 'prof': prof })
 
     def post(self, request,course_info, **kwargs):
         form = ClassPhotoForm(request.POST, request.FILES)
@@ -259,7 +261,7 @@ class DisplayPhotos(View):
 
             data = zip(versions,ids) 
             pend_data = zip(pend_versions,pend_ids)
-            context = {'studentID' : student_id , 'data' : data,'pend_data':pend_data}
+            context = {'student' : user , 'data' : data,'pend_data':pend_data}
             
             return render(request, self.template_name, context)
            

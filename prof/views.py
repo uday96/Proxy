@@ -49,7 +49,8 @@ class AddCourse(View):
         email = request.session['email']  
         logger.info("["+email+"] Adding Course")
         form = CourseAddForm()
-        return render(request,self.template_name,{'header' : "Add Course",'form' : form })
+        prof = Users.objects.get(email=email,role="T")
+        return render(request,self.template_name,{'header' : "Add Course",'form' : form,'prof':prof })
 
     def post(self, request, **kwargs):
         print 'AddCourse post'
@@ -95,7 +96,8 @@ class AddStudents(View):
         email = request.session['email']  
         logger.info("["+email+"] Adding Students")
         form = StudentAddForm()
-        return render(request,self.template_name,{'header' : "Add Student",'form' : form })
+        prof = Users.objects.get(email=email,role="T")
+        return render(request,self.template_name,{'header' : "Add Student",'form' : form, 'prof': prof })
 
     def post(self, request, course_info, **kwargs):
         print 'AddStudents post'
@@ -202,7 +204,7 @@ class ViewAllQueries(View):
                 logger.debug("Query : "+str(queries))
                 allqueries.extend(queries)
             logger.info("["+email+"] Retrieved All Queries Successfully!")
-            return render(request,self.template_name,{'profID' : profID ,'query_list' : allqueries })
+            return render(request,self.template_name,{'profID' : profID ,'query_list' : allqueries ,'prof':prof})
         except Exception as e:
             logger.error("["+email+"] "+str(e))
         return HttpResponse("Error")
@@ -216,11 +218,11 @@ class ResolveQuery(View):
         queryID = int(query)
         logger.debug("["+email+"] QueryID: "+str(queryID))
         try:
-            logger.info("["+email+"] Resolving Query "+queryID)
+            logger.info("["+email+"] Resolving Query "+str(queryID) )
             queryob = Queries.objects.get(id=queryID)
             queryob.resolved = True
             queryob.save()
-            logger.info("["+email+"] Query "+queryID+" Resolved")
+            logger.info("["+email+"] Query "+str(queryID)+" Resolved")
             #alert(text='Query Resolved Successfully!', title='Status', button='OK')
             return redirect("/prof/viewallqueries/")
         except Exception as e:
@@ -238,9 +240,10 @@ class UpdateAttendace(View):
     def get(self, request):
         print 'UpdateAttendance get'
         email = request.session['email']  
+        prof = Users.objects.get(email=email,role="T")
         logger.info("["+email+"] Updating Attendance")
         form = UpdateAttendanceForm()
-        return render(request,self.template_name,{'header' : "Update Attendance",'form' : form })
+        return render(request,self.template_name,{'header' : "Update Attendance",'form' : form,'prof':prof })
 
     def post(self, request, **kwargs):
         print 'UpdateAttendance post'
