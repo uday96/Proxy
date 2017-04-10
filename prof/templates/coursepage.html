@@ -2,11 +2,11 @@
 {% block content %}
 <div class="w3-main" style="margin-left:340px;margin-right:40px">
 	<h1><center>Course Details</center></h1>
-			<p style="text-align: center;">Name: {{ course.name }}</p>
-			<p style="text-align: center;">ID: {{ course.courseID }}</p>
-			<p style="text-align: center;">Dept: {{ course.deptID }}</p>
-			<p style="text-align: center;">Room: {{ course.room }}</p>
-			<p style="text-align: center;">Professor Name: {{ prof.name }}</p>
+			<p style="text-align: center;">Name: <strong>{{ course.name }}</strong><br>
+			ID: <strong>{{ course.courseID }}</strong><br>
+			Dept: <strong>{{ course.deptID }}</strong><br>
+			Room: <strong>{{ course.room }}</strong><br>
+			Professor Name: <strong>{{ prof.name }}</strong></p>
 	<div class="panel-body">
 			<h2 style="text-align: center;">Students Enrolled</h2>
 			{% if studentList %}
