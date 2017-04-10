@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
 <style>
 body,h1,h2,h3,h4,h5 {font-family: "Poppins", sans-serif}
-body {font-size:16px;}
+body {font-size:16px;background-color: #c9cacc;}
 .w3-half img{margin-bottom:-6px;margin-top:16px;opacity:0.8;cursor:pointer}
 .w3-half img:hover{opacity:1}
   ul {
@@ -20,11 +20,14 @@ body {font-size:16px;}
      
   li {
     font: 200 20px/1.5 Helvetica, Verdana, sans-serif;
-    background: #e0492f;
+    background: white;
+    border-radius: 5px;
+    border: solid #008080;
   }
     
   li:nth-child(odd) {
-    background: #e5b2a9;
+    background: white;
+    border: solid grey;
   }
 
   li a {
@@ -33,6 +36,7 @@ body {font-size:16px;}
     display: block;
     width: 300px;
     padding: 5px;
+    border-radius: 5px;
    
     -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
     -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
@@ -44,13 +48,26 @@ body {font-size:16px;}
   li a:hover {
     font-size: 30px;
     width: 100%;
-    background: #d1cfcf;
+    background: #008080;
+    border-radius: 5px;
+    font-weight: bold;
+    color: white;
+  }
+
+  input[type="text"] {
+    border: 3px solid #008080;
+    border-radius: 5px;
+    text-align: center;
+  }
+
+  input[type="text"]:focus {
+    border: 3px solid #008080;
   }
 </style>
 <body>
 
 <!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-red w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold;" id="mySidebar"><br>
+<nav class="w3-sidebar w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold; background-color: #008080;" id="mySidebar"><br>
   <a href="javascript:void(0)" onclick="w3_close()" class="w3-button w3-hide-large w3-display-topleft" style="width:100%;font-size:22px">Close Menu</a>
   <div class="w3-container">
     <img src="{{student.profilePicURL}}" width="95" height="95">
@@ -59,7 +76,7 @@ body {font-size:16px;}
     Department : <b>{{ student.deptID }}</b><br>
     Email : <b>{{ student.email }}</b></p>
   </div>
-  <div class="w3-bar-block">
+  <div class="w3-bar-block" style="color: white;">
     <a href="/student/studenthome/" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Home</a> 
     <a href="/student/raisequery/" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Raise Query</a> 
     <a href="/student/viewqueries/" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">View Query</a> 

@@ -1,9 +1,9 @@
 {% extends "studentbase.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="w3-main" style="margin-left:340px;margin-right:40px">
-  <div class="login-block" style="margin-top:17%">
-      <p><h1><center>Upload</center></h1></p>
+<div class="w3-main" style="margin-left:340px;margin-right:40px; text-align: center;">
+  <div class="login-block" style="margin-top:17%; border: solid black; padding-bottom: 2%;">
+      <p ><h1 style="font-size: 300%;"><center>Upload</center></h1></p>
       <form action="upload" enctype="multipart/form-data" method="post">
             {% csrf_token %}
             {{ form|crispy }}

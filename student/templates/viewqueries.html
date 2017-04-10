@@ -2,13 +2,13 @@
 {% block content %}
 <div class="w3-main" style="margin-left:340px;margin-right:40px">
 	<h1><center>View Queries</center></h1>
-	<p>StudentID : {{student.ID}}</p>
-	<div class="panel-body">
+	<p style="text-align: center;">StudentID : {{student.ID}}</p>
+	<div class="panel-body" style="text-align: center;">
 		{% if query_list %}
 		    <ul>
 		    {% for query in query_list %}
 		        <li>
-		        	<p>
+		        	<p style="font-weight: bold;">
 			        	Date : {{query.date|date:"M d, Y"}}<br>
 			        	CourseID : {{query.courseID}}<br>
 			        	Query : {{query.query}}<br>
