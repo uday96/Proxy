@@ -112,6 +112,15 @@ div.transbox {
     background-position: 15px 10px;
 }
 
+#myselect:not([multiple]){
+    -moz-appearance:none;
+    background-color: white;
+    border-color: #ff656c;
+    padding: .5em;
+    padding-right:1.5em;
+    border-radius:0;
+}
+
 .dropbtn {
     background-color: #4CAF50;
     color: white;

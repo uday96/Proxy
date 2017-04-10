@@ -77,7 +77,7 @@ class LoginHome(View):
 				return redirect("/login/")
 			except ObjectDoesNotExist:
 				logger.error("No User Record Found")
-				return redirect("/login/add/")
+				return redirect("/login/")
 		else:
 			logger.error("Invalid Form")
 			return redirect("/login/")

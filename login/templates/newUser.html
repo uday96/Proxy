@@ -6,7 +6,7 @@
 <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 <link href="{% static 'login/style.css' %}" rel="stylesheet">
 <meta charset="UTF-8">
-
+    
 <title>New User</title>
 
 </head>
@@ -25,10 +25,11 @@
         <input type="text" value="" placeholder="Department ID" id="deptID" name="deptID" />
         <input type="text" value="" placeholder="Email" id="email" name="email" />
         <input type="password" value="" placeholder="Password" id="password" name="password" />
-        <select id="role" name="role">
+        Role: <select id="myselect" name="role">
           <option value="S" selected>Student</option>
           <option value="T" selected>Teacher</option>
         </select>
+        <p></p>
         <button type="submit">Submit</button>
     </form>
 </div>

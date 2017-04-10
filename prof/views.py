@@ -249,10 +249,17 @@ class UpdateAttendace(View):
         print 'UpdateAttendance post'
         form = UpdateAttendanceForm(request.POST)
         email = request.session.get('email',None)
+        date_str = request.POST.get('date',"")
+        date=None
+        try:
+            date = datetime.datetime.strptime(date_str,'%Y-%m-%d')
+        except Exception as e_date:
+            logger.error("["+email+"] "+str(e_date))
+            return HttpResponse("Error")
+        logger.debug("["+email+"] Date: "+str(date))
         if form.is_valid():
             print 'valid form'
             logger.info("["+email+"] UpdateAttendance Valid Form")
-            date = form.cleaned_data['date']
             courseID = form.cleaned_data['courseID']
             studentID = form.cleaned_data['studentID']
             attendance = form.cleaned_data['attendance']
