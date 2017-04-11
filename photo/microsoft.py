@@ -157,6 +157,7 @@ def detect_faces(course_id,year,date,img_urls):
 	url2 = "https://westus.api.cognitive.microsoft.com/face/v1.0/identify"
 	mappings = {}
 	all_imgs = {}
+	id_to_url={}
 	for img_url in img_urls:
 
 		data1 = {"url":str(img_url)}
@@ -186,6 +187,7 @@ def detect_faces(course_id,year,date,img_urls):
 					for each in a:
 						try:
 							mappings[each['faceId']] = each['candidates'][0]['personId']
+							id_to_url[each['candidates'][0]['personId']] = img_url
 						except:
 							pass
 				else:
@@ -207,13 +209,15 @@ def detect_faces(course_id,year,date,img_urls):
 	instanceList = []
 	for each in students:
 		person_id = each.person_id
-		if person_id in people:			
+		
+		if person_id in people:		
+			img_url_store = id_to_url[person_id]	
 			for m in faces:
 				if mappings[m] == person_id:
 					rect = all_imgs[m]
 					break
 
-			instance = 	Attendance(courseID=course_id,date=date,studentID=each.student_id,present=True,year=year,url=img_urls[0],top=rect['top'],left=rect['left'],width=rect['width'],height=rect['height'])
+			instance = 	Attendance(courseID=course_id,date=date,studentID=each.student_id,present=True,year=year,url=img_url_store,top=rect['top'],left=rect['left'],width=rect['width'],height=rect['height'])
 			instance.save()
 			instanceList.append(instance)
 		else:
