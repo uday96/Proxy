@@ -1,0 +1,45 @@
+{% extends "studentbase.html" %}
+{% block content %}
+	<div class="w3-main" style="margin-left: 340px;margin-right: 40px">
+        <h1 style="font-size: 300%"><center>Attendance History</center></h1>
+		<p style="text-align: center;font-size: 120%">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>StudentID: <b>{{ studentID }}</b></p>
+    <div class="panel-body" style="text-align: center;">
+      	<table style="width: 100%">
+			<tr>
+			    <th><b><u>Date</u></b></th>
+			    <th><b><u>Present</u></b></th>
+			    <th><b><u>Image Url</u></b></th>
+			</tr>
+
+			{% if attendance_list %}
+			    {% for att in attendance_list %}
+			    <tr>
+			        <td>{{att.date|date:"M d, Y"}}</td>
+			        <td>{{att.present}}</td>
+			        {% if att.present %}
+			        <td><a href="/attendance/showImage/{{att.id}}" target="_blank">Click Here</a></td>
+			        {% else %}
+			        <td>No Link</td>
+			    	{% endif %}
+			    </tr>
+			    {% endfor %}    
+			{% else %}
+			    <tr>
+			    	<td>&nbsp</td>
+			    	<td>&nbsp</td>
+			    	<td>&nbsp</td>
+			    </tr>
+			{% endif %}
+		</table>
+      </div>
+      <div>
+      	<form action="/attendance/summary/individual/" method="get">
+      		<input type="hidden" name="courseID" value="{{ courseID }}">
+      		<input type="hidden" name="studentID" value="{{ studentID }}">
+      		<input type="hidden" name="year" value="{{ year }}">	
+      		<p></p>
+			<button type="submit">Get Summary</button>
+		</form>
+      </div>
+    </div>
+{% endblock %}

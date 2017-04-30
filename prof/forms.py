@@ -11,7 +11,7 @@ class StudentAddForm(forms.Form):
     studentIDs = forms.CharField(required=True)
 
 class UpdateAttendanceForm(forms.Form):
-    date = forms.DateField(required=True)
+    #date = forms.DateField(required=True)
     courseID = forms.CharField(required=True)
     studentID = forms.CharField(required=True)
     CHOICES = (

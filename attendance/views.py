@@ -5,7 +5,10 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, DeleteView
 from django.http import HttpResponse
 from .models import Attendance
+from login.models import Users
 import logging
+from django.views.decorators.csrf import csrf_exempt
+import datetime
 
 # Get logger
 logger = logging.getLogger('backup')
@@ -59,17 +62,25 @@ def proccessCourseAtt(attendanceList):
 
 
 def history(request, info):
-    logger.info("Attendance History")
+    email = request.session["email"]
+    logger.info("["+email+"] Attendance History")
     [courseID, studentID, year] = info.split(',')
     try:
-        attendanceList = Attendance.objects.filter(courseID=courseID, studentID=studentID, year=year)
-        context = {'attendance_list': attendanceList, 'courseID' : courseID, 'studentID' : studentID, 'year' : year}
-        return render(request, 'attendance/history.html', context)
+        user = Users.objects.get(email=email)
+        role = user.role
+        attendanceList = Attendance.objects.filter(courseID=courseID, studentID=studentID, year=year).order_by('-date')
+        if role=="S":
+            context = {'attendance_list': attendanceList, 'courseID' : courseID, 'studentID' : studentID, 'year' : year,'student':user}
+            return render(request, 'attendance/history_student.html', context)
+        elif role=="T":
+            context = {'attendance_list': attendanceList, 'courseID' : courseID, 'studentID' : studentID, 'year' : year,'prof':user}
+            return render(request, 'attendance/history_prof.html', context)
+        else:
+            logger.error("["+email+"] No Access Rights!")
+            return HttpResponse("No Access Rights!")        
     except Exception as e:
         logger.error("Failed to Retrieve Attendance History")
         logger.error(str(e))
-    # context = {'course_list': courseList, 'prof' : prof}
-    # return render(request, 'prof/homepage.html', context)
     return HttpResponse("Error")
 
 def showImage(request, attID):
@@ -83,20 +94,28 @@ def showImage(request, attID):
     return HttpResponse("Error")
 
 class IndividualSummary(View):
-    
-    template_name = 'attendance/individualSummary.html'
 
     def get(self,request):
-        logger.info("Getting Individual Summary")
+        email = request.session["email"]
+        logger.info("["+email+"] Getting Individual Summary")
         try:
             courseID = request.GET.get("courseID",None)
             studentID = request.GET.get("studentID",None)
             year = int(request.GET.get("year",None))
             logger.debug(str(courseID)+" "+str(studentID)+" "+str(year))
-            attendanceList = Attendance.objects.filter(courseID=courseID,studentID=studentID,year=year)
+            attendanceList = Attendance.objects.filter(courseID=courseID,studentID=studentID,year=year).order_by('-date')
             summary = proccessAttendance(attendanceList)
-            context = {'summary': summary, 'courseID' : courseID, 'studentID' : studentID, 'year' : year}
-            return render(request, self.template_name, context)
+            user = Users.objects.get(email=email)
+            role = user.role
+            if role=="S":
+                context = {'summary': summary, 'courseID' : courseID, 'studentID' : studentID, 'year' : year,'student':user}
+                return render(request,'attendance/individualSummary_student.html', context)    
+            elif role=="T":
+                context = {'summary': summary, 'courseID' : courseID, 'studentID' : studentID, 'year' : year,'prof':user}
+                return render(request,'attendance/individualSummary_prof.html', context)    
+            else:
+                logger.error("["+email+"] No Access Rights!")
+                return HttpResponse("No Access Rights!")
         except Exception as e:
             logger.error(str(e))
         return HttpResponse("Error")
@@ -106,15 +125,42 @@ class CourseSummary(View):
     template_name = 'attendance/courseSummary.html'
 
     def get(self,request):
-        logger.info("Getting Course Summary")
+        email = request.session["email"]
+        logger.info("["+email+"] Getting Course Summary")
         try:
             courseID = request.GET.get("courseID",None)
             year = int(request.GET.get("year",None))
             logger.debug(str(courseID)+" "+str(year))
-            attendanceList = Attendance.objects.filter(courseID=courseID,year=year)
+            attendanceList = Attendance.objects.filter(courseID=courseID,year=year).order_by('-date')
             summary = proccessCourseAtt(attendanceList)
-            context = {'summary': summary, 'courseID' : courseID,'year' : year}
+            prof = Users.objects.get(email=email,role="T")
+            logger.debug("Role: "+str(prof.role))
+            context = {'summary': summary, 'courseID' : courseID,'year' : year,'prof':prof}
             return render(request, self.template_name, context)
+        except Exception as e:
+            logger.error(str(e))
+        return HttpResponse("Error")
+
+class DateWiseSummary(View):
+
+    template_name = "attendance/datewiseSummary.html"
+
+    @csrf_exempt
+    def post(self,request):
+        email = request.session["email"]
+        logger.info("["+email+"] Getting DateWise Attendance Summary")
+        try:
+            date_str = request.POST.get("date","")
+            courseID = request.POST.get("courseID","")
+            year = int(request.POST.get("year",""))
+            date = datetime.datetime.strptime(date_str,'%Y-%m-%d')
+            logger.debug("date: "+date_str+", course: "+courseID+", year: "+str(year))
+            attendanceList = Attendance.objects.filter(courseID=courseID,year=year,date=date)
+            summary = proccessAttendance(attendanceList)
+            prof = Users.objects.get(email=email,role="T")
+            logger.debug("Role: "+str(prof.role))
+            context = {'summary' : summary, 'courseID' : courseID, 'year' : year, 'coursedate' : date,'prof':prof}
+            return render(request,self.template_name,context)
         except Exception as e:
             logger.error(str(e))
         return HttpResponse("Error")

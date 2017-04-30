@@ -1,39 +1,25 @@
-{% load crispy_forms_tags %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="panel-info">
-	    <div class="panel-heading">
-	    	<div class="container" align="right">
-		    	<form action="/prof/profhome/">
-				    <button type="submit" class="btn btn-primary">Home</button>
-				</form>
-			</div>
-			
-	    	<h1><center>Course Details</center></h1>
-
-			<p>Name: {{ course.name }}</p>
-			<p>ID: {{ course.courseID }}</p>
-			<p>Dept: {{ course.deptID }}</p>
-			<p>Room: {{ course.room }}</p>
-			<p>Professor Name: {{ prof.name }}</p>
-	      
-	    </div>
-	    <div class="panel-body">
-			<h2>Students Enrolled</h2>
+{% extends "profbase.html" %}
+{% block content %}
+<div class="w3-main" style="margin-left:340px;margin-right:40px">
+	<h1 style="font-size: 300%"><center>Course Details</center></h1>
+			<p style="text-align: center;font-size: 120%">Name: <strong>{{ course.name }}</strong><br>
+			ID: <strong>{{ course.courseID }}</strong><br>
+			Dept: <strong>{{ course.deptID }}</strong><br>
+			Room: <strong>{{ course.room }}</strong><br>
+			Professor Name: <strong>{{ prof.name }}</strong></p>
+	<div class="panel-body">
+			<h2 style="text-align: center;">Students Enrolled</h2>
 			{% if studentList %}
-			    <ul>
+			    <ul style="overflow: hidden;">
 			    {% for student in studentList %}
-			        <li><a href="/attendance/history/{{course.courseID}},{{ student.student_id }},{{course.year}}">{{ student.student_id }}</a></li>
+			        <li style="width: 10%; float: left; margin: 0 2% 6% 0; display: block; position: relative;"><a href="/attendance/history/{{course.courseID}},{{ student.student_id }},{{course.year}}">{{ student.student_id }}</a></li>
 			    {% endfor %}
 			    </ul>
 			{% else %}
 			    <p>No Students</p>
 			{% endif %}
 	    	{% csrf_token %}
+	    	<br>
 	    	<form action="/prof/addStudents/{{ course.courseID }},{{ course.year }}/">
 			    <button type="submit" class="btn btn-primary">Add Students</button>
 			</form>		
@@ -45,8 +31,11 @@
 			</form>
 		</div>
 		<div class="panel-body">
-			<a href="/attendance/summary/course?courseID={{ course.courseID }}&year={{ course.year }}" class="btn btn-primary">Get Course Summary</a>
-      </div>
-	</div>
-  </body>
-</html>
+			<form action="/attendance/summary/course/" method="get">
+				<input type="hidden" name="courseID" value="{{ course.courseID }}">
+				<input type="hidden" name="year" value="{{ course.year }}">
+				<button type="submit" class="btn btn-primary">Get Course Summary</button>
+			</form>
+    </div>
+</div>
+{% endblock %}

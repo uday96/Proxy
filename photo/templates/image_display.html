@@ -1,14 +1,11 @@
+{% extends "studentbase.html" %}
 {% load crispy_forms_tags %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="panel-info">
+{% block content %}
+<div class="w3-main" style="margin-left:340px;margin-right:40px; text-align: center;">
+  <div class="panel-info">
       <div class="panel-heading">
-        <h1><center>Student Photos</center></h1>
-		<p>StudentID: <b>{{ studentID }}</b></p>
+        <h1 style="font-size: 300%"><center>Student Photos</center></h1>
+		
       </div>
       <div class="panel-body">
           	<table style="width: 60%;margin-left:20%">
@@ -42,5 +39,5 @@
 			</table>
       </div>
     </div>
-  </body>
-</html>
+</div>
+{% endblock %}

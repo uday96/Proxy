@@ -1,0 +1,94 @@
+{% extends "studentbase.html" %}
+{% block content %}
+	<div class="w3-main" style="margin-left: 340px;margin-right: 40px">
+        <h1 style="font-size: 300%;"><center>Attendance Summary</center></h1>
+		<p style="text-align: center;font-size: 120%;">CourseID: <b>{{ courseID }}</b><br>Year: <b>{{ year }}</b><br>StudentID: <b>{{ studentID }}</b></p>
+		<div class="panel-body" style="text-align: center;float: left;margin-left: 17%;margin-top: 3%;">
+			{% if summary.present %}
+	          	<table>
+					<caption><b>Present<b></caption>  
+					<tr>
+					    <th><b><u>Date</u></b></th>
+					    <th><b><u>Present</u></b></th>
+					    <th><b><u>Image Url</u></b></th>
+					</tr>
+				    {% for att in summary.present %}
+				    <tr>
+				        <td>{{att.date|date:"M d, Y"}}</td>
+				        <td>{{att.present}}</td>
+				        <td><a href="/attendance/showImage/{{att.id}}"  target="_blank">Click Here</a></td>
+				    </tr>
+				    {% endfor %}    
+				</table>
+			{% else %}
+				<table>
+					<caption><b>Absent<b></caption>          	
+					<tr>
+					    <th><b><u>Date</u></b></th>
+					    <th><b><u>Present</u></b></th>
+					    <th><b><u>Image Url</u></b></th>
+					</tr>
+				    <tr>
+				        <td>&nbsp</td>
+				        <td>&nbsp</td>
+				        <td>&nbsp</td>
+				    </tr>
+				</table>
+			{% endif %}
+		</div>
+	<div class="panel-body" style="text-align: center;margin-left: 10%;float: left;margin-top: 3%;">
+      		<table>
+				<caption><b>Summary<b></caption>          	
+				<tr>
+				    <th><b><u>Attendance</u></b></th>
+				    <th><b><u>Count</u></b></th>
+				</tr>
+			    <tr>
+			        <td>Present</td>
+			        <td>{{summary.count_present}}</td>
+			    </tr>
+			    <tr>
+			        <td>Absent</td>
+			        <td>{{summary.count_absent}}</td>
+			    </tr>
+			    <tr>
+			        <td>Total</td>
+			        <td>{{summary.total}}</td>
+			    </tr>   
+			</table>
+      </div>
+      <div class="panel-body" style="text-align: center;float: left;margin-left: 10%;margin-top: 3%;">
+			{% if summary.absent %}
+	          	<table>
+					<caption><b>Absent<b></caption>          	
+					<tr>
+					    <th><b><u>Date</u></b></th>
+					    <th><b><u>Present</u></b></th>
+					    <th><b><u>Image Url</u></b></th>
+					</tr>
+				    {% for att in summary.absent %}
+				    <tr>
+				        <td>{{att.date|date:"M d, Y"}}</td>
+				        <td>{{att.present}}</td>
+				        <td>No Link</td>
+				    </tr>
+				    {% endfor %}    
+				</table>
+			{% else %}
+				<table>
+					<caption><b>Absent<b></caption>          	
+					<tr>
+					    <th><b><u>Date</u></b></th>
+					    <th><b><u>Present</u></b></th>
+					    <th><b><u>Image Url</u></b></th>
+					</tr>
+				    <tr>
+				        <td>&nbsp</td>
+				        <td>&nbsp</td>
+				        <td>&nbsp</td>
+				    </tr>
+				</table>
+			{% endif %}			
+		</div>
+	</div>
+{% endblock %}

@@ -52,7 +52,6 @@ class LoginHome(View):
 	@csrf_exempt
 	def post(self, request, **kwargs):
 		print 'Login post'
-		print request.POST
 		form = UserLoginForm(request.POST)
 		if form.is_valid():
 			logger.info("Valid Login Form")
@@ -78,7 +77,7 @@ class LoginHome(View):
 				return redirect("/login/")
 			except ObjectDoesNotExist:
 				logger.error("No User Record Found")
-				return redirect("/login/add/")
+				return redirect("/login/")
 		else:
 			logger.error("Invalid Form")
 			return redirect("/login/")

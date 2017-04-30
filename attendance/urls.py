@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^showImage/(?P<attID>[A-Za-z0-9]+)/$',views.showImage,name='showImage'),
     url(r'^summary/individual/',views.IndividualSummary.as_view(),name='indvSummary'),
     url(r'^summary/course/',views.CourseSummary.as_view(),name='courseSummary'),
+    url(r'^summary/datewise/',views.DateWiseSummary.as_view(),name='courSummary'),
 ]

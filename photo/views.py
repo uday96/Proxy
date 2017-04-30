@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import UploadFileForm,ClassPhotoForm
+from .forms import UploadFileForm,ClassPhotoForm,UploadProfilePicFileForm
 from .models import *
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -22,7 +22,13 @@ import requests
 import json
 import httplib, urllib, base64
 import logging
+
 from django.db.models import Q
+
+from login.models import Users
+from django.core import serializers
+from attendance.models import Attendance
+
 import math
 
 # Get logger
@@ -34,8 +40,10 @@ class UploadPhoto(View):
 
     def get(self, request):
         logger.info('Upload a photo')
+        email = request.session["email"]
+        student = Users.objects.get(email=email,role="S")
         form = UploadFileForm()
-        return render(request,self.template_name,{'form' : form })
+        return render(request,self.template_name,{'form' : form,'student':student,'upload_header':"Upload Photos" })
 
     def post(self, request, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)
@@ -49,21 +57,33 @@ class UploadPhoto(View):
             standard_size = 51200
 
             i = 0
+            standard_size = 51200
             for image in imageList:
                 image_size = image._size
                 ratio = image_size/standard_size
                 root = math.sqrt(ratio)
                 root = int(math.floor(root+0.5))
                 logger.info("["+user+"] Saving Image")
+                image_size = image._size
+                ratio = image_size/standard_size
+                root = math.sqrt(ratio)
+                root = int(math.floor(root+0.5))
                 instance = Photos(name = (str(name) + str(i)), pic= image)
                 instance.save()
                 logger.info("["+user+"] Image Saved")
-                foo = Image.open(instance.pic.url)                
+
+                foo = Image.open(instance.pic.url) 
+                # (a,b) =  foo.size  
+                # foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
+                # foo.save(instance.pic.url)
+
                 if root != 0:
                     (a,b) =  foo.size  
                     foo = foo.resize((a/root,b/root),Image.ANTIALIAS)
                     foo.save(instance.pic.url)
-                    logger.info("Image Resized")
+
+                    logger.info("["+user+"] Image Resized")
+
 
                 logger.info("["+user+"] Uploading Image to Cloud")
                 response = cloudinary.uploader.upload(instance.pic.url)
@@ -89,7 +109,12 @@ class UploadClassPhotos(View):
     def get(self, request,course_info):
         logger.info('Upload a class photo')        
         form = ClassPhotoForm()
-        return render(request,self.template_name,{'form' : form })
+        email = request.session.get('email')
+        prof = Users.objects.get(email=email)
+        info = str(course_info).split(",")
+        courseID = str.lower(info[0])
+        year = str(info[1])
+        return render(request,self.template_name,{'form' : form, 'prof': prof, 'courseID':courseID,'year':year})
 
     def post(self, request,course_info, **kwargs):
         form = ClassPhotoForm(request.POST, request.FILES)
@@ -97,13 +122,14 @@ class UploadClassPhotos(View):
         group_id = str.lower(info[0]) + "_" + str(info[1])
         if form.is_valid():
             logger.info('Valid Upload Class Photo Form')
-            course = request.POST['course']
+            course = group_id
             date = request.POST['date']
             imageList = request.FILES.getlist('image')
             urls = []
             image = imageList[0]
             standard_size = 51200
             # files = request.FILES.getlist('file_field')
+            standard_size = 51200
             for image in imageList:
                 image_size = image._size
                 ratio = image_size/standard_size
@@ -119,8 +145,10 @@ class UploadClassPhotos(View):
                     (a,b) =  foo.size  
                     foo = foo.resize((a/root,b/root),Image.ANTIALIAS)
                     foo.save(instance.pic.url)
-                    logger.info("Image Resized")                
-                
+
+                    logger.info("Image Resized")
+
+
                 logger.info("Uploading Image to Cloud")
                 response = cloudinary.uploader.upload(instance.pic.url)
                 logger.info("Uploaded Image to Cloud Successfully!")
@@ -129,14 +157,28 @@ class UploadClassPhotos(View):
                 instance.save()
                 logger.info("Class Photo Saved")    
 
-            detect_faces(info[0],info[1],date,urls)
+            attendanceList = list(detect_faces(info[0],info[1],date,urls))
+            attIdList = list()
+            student_dps = []
+            for att in attendanceList:
+                attIdList.append(att.id)
+                studID = att.studentID
+                studentOb = Users.objects.get(ID=studID,role="S")
+                student_dps.append(studentOb.profilePicURL)
+            print attIdList
+            request.session['attIdList'] = attIdList
             course = Course.objects.get(courseID=info[0], year=info[1])
             prof = Users.objects.get(ID=course.profID)
             
-            studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(info[0]))+"_"+str(info[1])))
+            finalData = zip(attendanceList,student_dps)
+            # studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(info[0]))+"_"+str(info[1])))
             try:
-                context = {'course': course, 'prof' : prof, 'studentList' : studentList}
-                return render(request, 'coursepage.html', context)
+
+                # context = {'course': course, 'prof' : prof, 'studentList' : studentList}
+                context = {'courseID': info[0], 'attendanceList': finalData, 'date': date, 'info1': info[1],'prof':prof}
+                logger.debug(str(context))
+                return render(request, 'attendance_display.html', context)
+
             except Exception as e:
                 logger.error(str(e))
             return HttpResponse("Error")
@@ -146,17 +188,68 @@ class UploadClassPhotos(View):
             return HttpResponse("Invalid Form!")
 
 
+class changeAttendance(View):
+
+    template_name = 'attendance_display.html'
+
+    def post(self,request):
+        email = request.session["email"]
+        try:
+            attID = int(request.POST.get("attID",None))
+            att = Attendance.objects.get(id=attID)
+            logger.info("["+email+"] Changing attendance for "+str(att))
+            if att.present == False:
+                att.present = True
+            else:
+                att.present = False
+            att.save()
+            attIdList = request.session.get('attIdList', None)
+            attendanceList = list()
+            for val in attIdList:
+                attendanceList.append(Attendance.objects.get(id=val))
+            prof = Users.objects.get(email=email,role="T")
+            context = {'courseID': att.courseID, 'attendanceList': attendanceList, 'date': att.date, 'info1': att.year,'prof':prof}
+            logger.debug(str(context))
+            return render(request,self.template_name, context)
+        except Exception as e:
+            logger.error(str(e))
+        return HttpResponse("Error")
+
+class finalise(View):
+
+    template_name = 'coursepage.html'
+
+    def post(self,request):
+        try:
+            email = request.session["email"]
+            logger.info("["+email+"] Finalising Attendance")
+            courseID = request.POST.get("courseID",None)
+            year = int(request.POST.get("year",None))
+            course = Course.objects.get(courseID=courseID, year=year)
+            logger.debug("Course: "+str(course))
+            prof = Users.objects.get(ID=course.profID,role="T")
+            studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(courseID))+"_"+str(year)))
+            context = {'course': course, 'prof' : prof, 'studentList' : studentList}
+            logger.debug(str(context))
+            return render(request,self.template_name,context)
+        except Exception as e:
+            logger.error(str(e))
+        return HttpResponse("Error")
+
+
 class ChangeProfilePic(View):
 
     template_name = 'upload.html'
 
     def get(self, request):
         logger.info('Change Profile Pic')
-        form = UploadFileForm()
-        return render(request,self.template_name,{'form' : form })
+        email = request.session["email"]
+        student = Users.objects.get(email=email,role="S")
+        form = UploadProfilePicFileForm()
+        return render(request,self.template_name,{'form' : form,'student':student,'upload_header':"Upload Profile Pic"})
 
     def post(self, request, **kwargs):
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadProfilePicFileForm(request.POST, request.FILES)
         user = request.session['email']
         if form.is_valid():
             logger.info("["+user+"] Valid Change Profile Pic Form")
@@ -228,7 +321,7 @@ class DisplayPhotos(View):
 
             data = zip(versions,ids) 
             pend_data = zip(pend_versions,pend_ids)
-            context = {'studentID' : student_id , 'data' : data,'pend_data':pend_data}
+            context = {'student' : user , 'data' : data,'pend_data':pend_data}
             
             return render(request, self.template_name, context)
            

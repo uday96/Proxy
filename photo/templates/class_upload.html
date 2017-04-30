@@ -1,26 +1,17 @@
+{% extends "profbase.html" %}
 {% load crispy_forms_tags %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="panel-info">
-      <div class ="panel-heading">
-        <div class="container" align="right">
-          <form action="/prof/homePage/ignore">
-                <button type="submit" class="btn btn-primary">Home</button>
-            </form>
-        </div>
-        <p><h1><center>Class Upload<center></h1></p>
-      </div>
-      <div class="panel-body">
-          	<form enctype="multipart/form-data" method="post" class="uniForm" style="width: 30%">
-			    {% csrf_token %}
-			    {{ form|crispy }}
-			    <button type="submit" class="btn btn-primary">Upload</button>
-			</form>
-      </div>
-    </div>
-  </body>
-</html>
+{% block content %}
+<div class="w3-main" style="margin-left:340px;margin-right:40px; text-align: center;">
+  <div class="panel-body" style="position: absolute; width: 300px; height: 200px; z-index: 15; top: 20%; left: 60%; margin: -100px 0 0 -150px;background: #c9cacc; text-align: center;">
+    <h2 style="font-size: 300%; text-align: center;">Upload Class Photo</h2>
+    <p style="font-size: 130%;text-align: center;">Course ID : <strong>{{courseID}}</strong><br>Year : <strong>{{year}}</strong></p>
+    <form enctype="multipart/form-data" method="post" class="uniForm" style="width: 30%;">
+          {% csrf_token %}
+          Date* <input type="date" name="date" id="formdate">
+          {{ form|crispy }}
+          <p></p>
+          <button type="submit" class="btn btn-primary" style="width: 100%">Upload</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

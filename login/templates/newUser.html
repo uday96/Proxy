@@ -6,13 +6,38 @@
 <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 <link href="{% static 'login/style.css' %}" rel="stylesheet">
 <meta charset="UTF-8">
-
+    
 <title>New User</title>
+<style>
+button {
+    width: 15%;
+    height: 40px;
+    background:#ff656c;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid #c9cacc;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-family: Montserrat;
+    outline: none;
+    cursor: pointer;
+  }
 
+  button:hover {
+    background:white;
+    color: black;
+    border-radius: 5px;
+    border: 1px solid #008080;
+  }
+</style>
 </head>
 
 <body>
-
+<div>
+    <form method="get" action="/administrator/"><button type="submit" style="width: 10%;margin-left: 85%">Home</button></form>
+</div>
 <div class="transbox">
     <p style="text-align: center; color: #ffffff; font-size: 300%;">Attendance System</p>
 </div>
@@ -25,10 +50,11 @@
         <input type="text" value="" placeholder="Department ID" id="deptID" name="deptID" />
         <input type="text" value="" placeholder="Email" id="email" name="email" />
         <input type="password" value="" placeholder="Password" id="password" name="password" />
-        <select id="role" name="role">
+        Role: <select id="myselect" name="role">
           <option value="S" selected>Student</option>
           <option value="T" selected>Teacher</option>
         </select>
+        <p></p>
         <button type="submit">Submit</button>
     </form>
 </div>

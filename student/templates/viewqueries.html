@@ -1,38 +1,36 @@
-{% load crispy_forms_tags %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="panel-info">
-	    <div class="panel-heading">
-		    <div class="container" align="right">
-		    	<form action="/student/studenthome/">
-		            <button type="submit" class="btn btn-primary">Home</button>
-		        </form>
-		    </div>
-	    	<h1><center>View Queries</center></h1>
-	    	<p>StudentID : {{studentID}}</p>
-	    </div>
-	    <div class="panel-body">
-	    	{% if query_list %}
-			    <ul>
-			    {% for query in query_list %}
-			        <li>
-			        	<p>
-				        	Date : {{query.date|date:"M d, Y"}}<br>
-				        	CourseID : {{query.courseID}}<br>
-				        	Query : {{query.query}}<br>
-				        	Resolved : {{query.resolved}}<br>
-			        	</p>
-			        </li>
-			    {% endfor %}
-			    </ul>
-			{% else %}
-			    <p>No Queries</p>
-			{% endif %}
-	    </div>
+{% extends "studentbase.html" %}
+{% block content %}
+<div class="w3-main" style="margin-left:340px;margin-right:40px">
+	<h1 style="font-size: 300%"><center>View Queries</center></h1>
+	<p style="text-align: center;font-size: 120%">StudentID : <strong>{{student.ID}}</strong></p>
+	<div class="panel-body" style="text-align: center;">
+		{% if query_list %}
+		    <ul>
+		    {% for query in query_list %}
+		    		{% if query.resolved %}
+		        <li style="background-color:#51ad6a">
+		        	<p style="font-weight: bold;">
+			        	Date : {{query.date|date:"M d, Y"}}<br>
+			        	CourseID : {{query.courseID}}<br>
+			        	Query : {{query.query}}<br>
+			        	Resolved : {{query.resolved}}<br>
+		        	</p>
+		        </li>
+		        {% else %}
+		        <li style="background-color:#b2806e">
+		        	<p style="font-weight: bold;">
+			        	Date : {{query.date|date:"M d, Y"}}<br>
+			        	CourseID : {{query.courseID}}<br>
+			        	Query : {{query.query}}<br>
+			        	Resolved : {{query.resolved}}<br>
+		        	</p>
+		        </li>
+		        {% endif %}
+		    {% endfor %}
+		    </ul>
+		{% else %}
+		    <p>No Queries</p>
+		{% endif %}
 	</div>
-  </body>
-</html>
+</div>
+{% endblock %}
