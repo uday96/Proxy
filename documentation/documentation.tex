@@ -1,0 +1,889 @@
+\documentclass[paper=a4, fontsize=15pt]{scrartcl}
+\usepackage[T1]{fontenc}
+\usepackage{fourier}
+
+\usepackage[english]{babel}															% English language/hyphenation
+\usepackage[protrusion=true,expansion=true]{microtype}	
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage[pdftex]{graphicx}	
+\usepackage{url}
+\usepackage{multicol}
+\usepackage{enumitem}
+
+
+%%% Custom sectioning
+\usepackage{sectsty}
+\allsectionsfont{\centering \normalfont\scshape}
+
+
+%%% Custom headers/footers (fancyhdr package)
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead{}											% No page header
+\fancyfoot[L]{}											% Empty 
+\fancyfoot[C]{}											% Empty
+\fancyfoot[R]{\thepage}									% Pagenumbering
+\renewcommand{\headrulewidth}{0pt}			% Remove header underlines
+\renewcommand{\footrulewidth}{0pt}				% Remove footer underlines
+\setlength{\headheight}{13.6pt}
+
+
+%%% Maketitle metadata
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+
+\title{
+		%\vspace{-1in} 	
+		\usefont{OT1}{bch}{b}{n}
+		\normalfont \normalsize \textsc{IITM-CS3410 : Software Engineering lab} \\ [25pt]
+		\horrule{0.5pt} \\[0.4cm]
+		\huge Proxy Report \\
+		\horrule{2pt} \\[0.5cm]
+}
+\author{
+		\normalfont 								\normalsize
+        \textbf{Aditya Reddy CS14B002}\\[-3pt]		\normalsize
+        \textbf{Sai Krishna CS14B018}\\[-3pt]		\normalsize
+        \textbf{Revanth Reddy CS14B025}\\[-3pt]		\normalsize
+        \textbf{Uday Teja CS14B044}\\[-3pt]		\normalsize
+        \textbf{Vedant Somani CS14B053}\\[-3pt]		\normalsize
+        \normalfont
+}
+\date{}
+
+\graphicspath{ {images/} }
+
+
+%%% Begin document
+\begin{document}
+\maketitle
+
+\section{Abstract}
+
+
+
+The Proxy Application presented in this paper is an attendance tracking application intended for use by universities to track attendance of the students. It allows the administrators to input the photographs of the class and record the attendance of the students based on the face recognition algorithm. This eliminates the issue of proxy in the universities, thereby saving time for the professor with no need to manually check for any issues in the attendance .
+\\
+\\
+\\
+\\
+\\
+\\
+\section{Introduction}
+
+\begin{multicols}{2}
+
+The Proxy Application is a software product intended to be used by the universities to record the students' attendance based on the photographs uploaded of the class. It uses face recognition algorithms to achieve the task. It allows students to input their photographs and the professors to upload the class photographs. The photographs uploaded by the students are used as initial training data for the application. The photographs uploaded by the professor, after resolving any issues that arise, are again used to train the application. This helps in achieving better recognition rate as the time progresses. Any issues that are raised by the students can be resolved by the corresponding course professor via an interface in the application itself.
+
+\end{multicols}
+
+
+\section{Project General Description}
+
+\begin{multicols}{2}
+
+The main purpose of PROXY application is to track attendance from a few photographs of the class. This application has 4 major modules:
+
+\begin{itemize}
+    \item First module is the Professor/TA interface. This interface lets professors upload images of the class, view attendance of any student of that class, answer queries raised by students about their attendance, and manually change the attendance in case the image recognition algorithm makes any error.
+
+    \item Second module is the Student interface. This interface lets students upload their photos in different angles which will only be used for recognising their face. Students should also enter their details like Name, Roll no, Phone no through this interface. This information will be used for administrative purposes.
+    
+    \item Third module deals with the algorithm part. This is a very important module of this application. A good face recognition algorithm will be used here, so that very less number of errors are made.
+    
+    \item This last module deals with logging every activity done by professors or TA's or students on this application. This log helps in many purposes like recovery from a database crash, improvising this application, to find any malfunctioning part etc.
+
+\end{itemize}
+
+\end{multicols}
+\pagebreak
+\section{Functional Requirements}
+\begin{multicols}{2}
+
+The main functional requirements of the Attendance from a Photograph application are the following:
+
+\begin{enumerate}
+    \item The application shall provide a means for entering and storing
+    \begin{itemize}
+        \item Courses enrollment information
+        \item Course teacher information
+        \item Students' attendance
+        \item Mappings generated between roll numbers and faces from the photograph
+    \end{itemize}
+    
+    \item The application shall update the attendance of the students by recognizing faces from the photograph of the class uploaded by the professor.
+    
+    \item The application should have a means for students to refute any incorrect mapping or attendance.
+    
+    \item The application shall have utility for students to upload multiple photographs from which can be used in the training algorithm to generate the model.
+    
+    \item The application shall have a provision for the professor to mark attendance for 
+unrecognized faces or correct attendance for incorrectly recognized faces.
+
+    \item The application should be able to provide a history of the student's attendance.
+    
+    \item The application shall log all the actions performed by various users including various queries raised by the students regarding erroneous attendance.
+    
+    \item The application should be able to give privileged and unprivileged access based on the	type of the user.
+    
+    \item The application should notify the professor of the queries raised by the students.
+    
+    \item The application shall use a machine learning model for recognizing faces from the photograph.
+    
+    \item The application shall provide an interface for the professor to manually validate the mappings in case of a mismatch.
+    
+    \item The application shall provide the exclusive right to modify an attendance only to the professor.
+\end{enumerate}
+
+\end{multicols}
+\pagebreak
+\section{Non-Functional Requirements}
+
+\begin{multicols}{2}
+
+ The most important non-functional requirements of the Attendance from a Photograph application are the following:
+ 
+ \begin{enumerate}
+     \item The application shall be web based and written in Django
+     
+     \item The face recognition shall be done by using any computer vision training algorithm on the training photos or by using readily available libraries.
+     
+     \item Remote databases shall be used for storing photos and logs
+ \end{enumerate}
+
+\end{multicols}
+
+\section{Use Case Description}
+
+\begin{multicols}{2}
+
+\begin{itemize}
+    
+    \item \textbf{Enter Professor Information}\\ Professor Details are stored and each professor is allotted an ID.
+    \item \textbf{Enter Course Information} \\ Each professor adds the details of the courses he/she are instructing, the roll numbers of students enrolled and the details of the TAs.
+    \item \textbf{Upload Class Photographs}\\ Multiple photographs of the day can be uploaded which will be sent to the recognition algorithm.
+    \item \textbf{Answer Student Queries} \\ There might arise the following issues.\\
+    \begin{itemize}
+        \item Attended but marked absent
+        \item Attended and marked present but someone else's photo
+        \item Didn't attend but marked present.
+    \end{itemize}
+    Appropriate actions will be taken to resolve them.
+    \item \textbf{Manually Update Attendance} \\ In the situation where the photograph is not taken, there is an option to manually update the attendance of the class.
+    \item \textbf{Upload Student Photographs} \\ The students will upload multiple photographs of themselves in different angles. These photographs once uploaded will go through one time approval by an admin, to avoid the case where a student uploads someone else's photograph
+    \item \textbf{Raise Query for Attendance} \\ The issues mentioned above can occur and in such case, they can raise an issue about it to the professor. Once raised, the professor and TAs are notified accordingly
+    \item \textbf{Check Previous Attendance} \\ The student has an option to check the previous attendances of the semester in the history tab.   
+    
+    
+\end{itemize}
+
+
+\end{multicols}
+
+
+\section{Z Language Specifications}
+
+
+\begin{center}
+\includegraphics[scale=0.65]{1.png}
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.65]{2.png}
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.65]{3.png}
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.65]{4.png}
+\end{center}
+
+ \newpage
+\section{Context Models}
+
+The proxy application is divided into two flows. One flow is for the students and the other is for the professors. 
+
+
+\begin{center}
+\subsection{{\Large System Diagram}}
+\includegraphics[scale=0.45]{Context.png}
+\end{center}
+
+The various contexts can be illustrated as :
+
+\begin{itemize}
+    \item \textbf{Professor information context}\\
+    This context comes under the \textit{User Information System}. In this context, the professor can see his/her details such as name, Email Id, phone, department and room number. The various actions that can be performed are : 
+    \begin{enumerate}
+        \item \textit{Modify information}\\
+        The action is used to update the professor information. On updating , it returns to the same context i.e the Professor information context.
+        
+    \end{enumerate}
+    
+    \item \textbf{Course Information Context}\\
+    This context comes under the \textit{Course Information system}. This context contains various details about the course. The actions that can be performed are :
+    \begin{enumerate}
+        \item \textit{Add Student}\\
+        The action is used to add a student to the course. It returns to the same context.
+        \item \textit{View History}\\
+        The action is used to get a summary/history of the course attendance. This action goes to the Attendance history context.
+        \item \textit{Give attendance}\\
+        This action is used to manually update the attendance of students. It goes to the Update attendance context.
+    \end{enumerate}
+        
+   \item \textbf{Update attendance context}\\
+   This context comes under the \textit{Attendance update system}.
+   This context contains has the roll numbers of the various students whose attendance is to be updated.
+   The actions that can be performed are :
+   \begin{enumerate}
+       \item \textit{Give attendance}\\
+       This action updates the attendance for the students and returns to the Course information context.
+   \end{enumerate}
+   
+   \item \textbf{Answer queries context}\\
+   This context comes under the \textit{Queries system}.It contains the various queries that have been raised by the students in each course. The actions that can be performed are:
+   \begin{enumerate}
+       \item \textit{Resolve query}\\
+       This action is used to commit that a student's query has been resolved. The system remains in the same context after this action.
+   \end{enumerate}
+   
+   \item \textbf{ Class Photo context}\\
+   This context comes under the \textit{Computer Vision system}. It has the class photo for which attendance is to be obtained. The actions that can be performed are:
+   \begin{enumerate}
+        \item \textit{Upload photo}\\
+        This action is used to send the class photograph to the computer vision model to identify the students in the photograph. After this , it goes to the Update attendance context.
+        
+    \end{enumerate}
+    
+    \item \textbf{Update photos context}\\
+    This context comes under the \textit{Student Photograpg system}. It contains a list of all the photos of the student which are being used by the computer vision model to identify his/her face in the class photograph. The actions that can be performed are:
+   \begin{enumerate}
+        \item \textit{Upload photo}\\
+        This action adds the photo to the list of student photos. The system remains in the same context.
+        
+        \item \textit{Delete photo}\\
+        This action remove the photo from the list of student photos. The system remains in the same context.
+        
+    \end{enumerate}
+    
+    \item \textbf{Student Attendance history context}\\
+    This context comes under the \textit{Attendance history context}. It contains the summary/history of the student's attendance in different courses.The actions that can be performed are:
+   \begin{enumerate}
+        \item \textit{Choose date and course}\\
+        This action shows the student attendance for that particular date and course. The system remains in the same context.
+    \end{enumerate}  
+    
+    
+   
+    \item \textbf{Student Information context}\\
+    This context comes under the \textit{User Information System}. It is shown by the student home page URL. In this context, the student can see his/her details such as name, roll number, email Id, phone number, photograph and all the courses that he/she is currently taking. There are no actions under this context as the student can only view the information but cannot modify it.
+    
+    
+    
+
+
+
+    \item \textbf{Raise Query context}\\
+    This context comes under the \textit{Queries System}. It is shown under student raise query URL. In this context, the student can raise a query. The various actions that can be performed are : 
+    \begin{enumerate}
+        \item \textit{Submit Query}\\
+        The action is used to submit the query to the corresponding course admins. The student has to choose the course and enter his query in a text field to submit his query. It then returns to View query context.
+        
+    \end{enumerate}
+        
+
+    
+    
+    
+
+
+    \item \textbf{View Query context}\\
+    This context comes under the \textit{Queries System}. It is shown under the student view query URL. In this context, the student can view all his queries, both resolved and pending. No actions can be performed under this context as the student is allowed to only view the queries and nothing else.
+        
+
+    \item \textbf{Professor Courses context}\\
+    This context comes under the \textit{Course Information System}. It is shown under professor home URL. Professor can view all his courses and can add a new course under this context. The various actions that can be performed are : 
+    \begin{enumerate}
+        \item \textit{Choose Course}\\
+        The professor can click on the course name to go to its home page. It then goes to Course Information context.
+        
+        \item \textit{Add New Course}\\
+        The professor can add a new course under this action. This takes him to professor addcourse URL. The system goes to Course Information context.
+        
+    \end{enumerate}
+        
+
+    
+
+    \item \textbf{Attendance History context}\\
+    It is shown under professor attendance history URL. Professor can view attendance information of a course on a given day which includes stats, photo mappings and unrecognized photos. The various actions that can be performed are : 
+    \begin{enumerate}
+        \item \textit{Choose Data}\\
+        The professor chooses a date from the calendar UI and the attendance information of the course on that day is automatically displayed. The system still remains in the same context.
+        
+    \end{enumerate}
+        
+
+    
+    
+  
+    \item \textbf{Authenticate Photos context}\\
+    It is shown under professor authenticate photos URL. The photographs to be authenticated are sorted according to roll numbers and grouped under respective courses. The various actions that can be performed are : 
+    \begin{enumerate}
+        \item \textit{Authenticate}\\
+        This action leads to authentication of a photo, one at a time. The system remains under the same context.
+        
+        \item \textit{Authenticate All}\\
+        The professor can authenticate all the photos of a student with this action. The system remains under the same context.
+        
+    \end{enumerate}
+        
+
+    
+    
+    
+
+\end{itemize}
+
+\subsection{Interaction Models}
+
+
+\begin{tabular}{|p{36em}|} 
+ \hline
+ \textbf{Use Case : Input Student Photographs}\\
+ \hline
+ \textbf{ID } : UC1\\
+ \hline
+ \textbf{Actor }: Student\\
+ \hline
+ \textbf{Precondition }:
+ \begin{itemize}[topsep=0pt]
+     \item Student photographs taken from different angles are supposed to be added / deleted.
+ \end{itemize}\\
+ \hline
+ \textbf{Flow of Events }:
+ \begin{enumerate}[topsep=0pt]
+     \item On logging in, there will be a tab 'Upload / Delete photo'.
+     \item On clicking the tab, there will be a list of all his/her photographs shown to him/her.
+     \item To delete a photo, the user can click 'delete'.
+     \item To upload a photo, the user can click 'upload new'. Then uploads a photo and clicks 'Submit'.
+     \item A request is sent to the admin to validate the photo.
+ \end{enumerate}\\
+ \hline
+ \textbf{Secondary Scenarios }:
+ \begin{itemize}[topsep=0pt]
+     \item No photo uploaded
+     \item Admin rejected
+     \item Admin Accepted
+ \end{itemize}\\
+ \hline 
+ \textbf{Postcondition }:
+ \begin{itemize}[topsep=0pt]
+     \item Uploaded photographs are stored in a database (based on admins response) and act as our training set.
+ \end{itemize}\\
+ \hline
+ 
+ 
+ \end{tabular}
+ 
+ 
+
+ 
+\begin{center}
+\includegraphics[scale=0.65]{up_stu_photo.png}
+{\Large Sequence diagram for input student photograph}
+\end{center}
+
+ 
+ 
+ 
+ 
+\begin{tabular}{|p{36em}|} 
+ \hline
+ \textbf{Use Case : Input Student Details}\\
+ \hline
+ \textbf{ID } : UC2\\
+ \hline
+ \textbf{Actor }: Student, Admin\\
+ \hline
+ \textbf{Precondition }:
+ \begin{itemize}[topsep=0pt]
+     \item Student details to be added / modified.
+ \end{itemize}\\
+ \hline
+ \textbf{Flow of Events }:
+ \begin{enumerate}[topsep=0pt]
+     \item On logging in, there will be a tab 'Upload / Delete photo'.
+     \item If the student details are not present, a page asking for the same will show up. Student is asked to input details like.
+     \begin{itemize}[topsep=0pt]
+         \item Name
+         \item Roll Number
+         \item Phone Number
+     \end{itemize}
+     The student can then click 'submit'.
+     \item If the details are already present, the user can modify his/her phone number.
+     \item Appropriate changes are made in the database.
+ \end{enumerate}\\
+ \hline
+ \textbf{Secondary Scenarios }:
+ \begin{itemize}[topsep=0pt]
+     \item Insufficient details     
+ \end{itemize}\\
+ \hline 
+ \textbf{Postcondition }:
+ \begin{itemize}[topsep=0pt]
+     \item In case of a phone number change, an email is to be sent to the user stating that there was a change of phone number from X to Y
+     \item The details are stored / updated in the appropriate databases.
+ \end{itemize}\\
+ \hline
+ 
+ 
+ \end{tabular}
+ 
+ 
+  
+\begin{tabular}{|p{36em}|} 
+ \hline
+ \textbf{Use Case : Input Class Information}\\
+ \hline
+ \textbf{ID } : UC3\\
+ \hline
+ \textbf{Actor }: Professor, TA\\
+ \hline
+ \textbf{Precondition }:
+ \begin{itemize}[topsep=0pt]
+     \item Class Information needs to be entered / modified.
+ \end{itemize}\\
+ \hline
+ \textbf{Flow of Events }:
+ \begin{enumerate}[topsep=0pt]
+     \item The actor can add a new class by clicking 'Add class'
+     \item On clicking so, the prompt asks for the following details
+     \begin{itemize}[topsep=0pt]
+         \item Course Number 
+         \item Course Name (automatically updated, if data available)
+         \item Course Instructor ID
+         \item Course Instructor Name (automatically updated if data available)
+         \item Semester
+     \end{itemize}
+     On clicking 'Add' it takes to another page which prompts to enter the details of the students attending the course
+     \item The user is asked to enter roll no's of students enrolled.
+     \item The system validates the entry
+     \item Appropriate database entries are made
+ \end{enumerate}\\
+ \hline
+ \textbf{Secondary Scenarios }:
+ \begin{itemize}[topsep=0pt]
+     \item Class already exists
+     \item Instructor does not exist
+     \item Insufficient Details
+     \item Student does not exist
+ \end{itemize}\\
+ \hline 
+ \textbf{Postcondition }:
+ \begin{itemize}[topsep=0pt]
+     \item The class is saved.     
+ \end{itemize}\\
+ \hline
+ 
+ 
+ \end{tabular}
+ 
+ 
+ \begin{center}
+\includegraphics[scale=0.65]{ent_cou_inf.png}
+ {\Large Sequence diagram for input class information}
+\end{center}
+
+
+ 
+ 
+ \begin{tabular}{|p{36em}|} 
+ \hline
+ \textbf{Use Case : Upload Attendance Photograph(s)}\\
+ \hline
+ \textbf{ID } : UC4\\
+ \hline
+ \textbf{Actor }: Professor, TA\\
+ \hline
+ \textbf{Precondition }:
+ \begin{itemize}[topsep=0pt]
+     \item Attendance is to be marked.
+ \end{itemize}\\
+ \hline
+ \textbf{Flow of Events }:
+ \begin{enumerate}[topsep=0pt]
+     \item All the courses associated with the actor are listed and he/she selects the concerned course out of those.
+     \item Then a prompt asks for the date.
+     \item After entering the date, the actor can upload multiple photographs of the class
+     \item The photographs are stored in the database appropriately
+     \item On clicking submit, the algorithm is run and the extracted information is stored
+ \end{enumerate}\\
+ \hline
+ \textbf{Secondary Scenarios }:
+ \begin{itemize}[topsep=0pt]
+     \item Date not entered
+     \item No photo uploaded     
+ \end{itemize}\\
+ \hline 
+ \textbf{Postcondition }:
+ \begin{itemize}[topsep=0pt]
+     \item The photos are stored
+     \item Face recognition algorithm is run
+     \item The extracted information is stored (also used as training data for subsequent queries)
+ \end{itemize}\\
+ \hline
+ 
+ 
+ \end{tabular}
+ 
+ 
+  \begin{center}
+\includegraphics[scale=0.55]{up_class_pho.png}
+ {\Large Sequence diagram for upload class photo}
+\end{center}
+
+
+
+\begin{tabular}{|p{36em}|} 
+ \hline
+ \textbf{Use Case : View Attendance (Student)}\\
+ \hline
+ \textbf{ID } : UC5\\
+ \hline
+ \textbf{Actor }: Student\\
+ \hline
+ \textbf{Precondition }:
+ \begin{itemize}[topsep=0pt]
+     \item To view the attendance.
+ \end{itemize}\\
+ \hline
+ \textbf{Flow of Events }:
+ \begin{enumerate}[topsep=0pt]
+     \item A list of all courses the student is currently enrolled into is shown. The student selects the course.
+     \item There will be two tabs
+     \begin{itemize}[topsep=0pt]
+         \item  Current Week : Classes happened in the last 7 days
+         \item  History : Earlier Classes
+     \end{itemize} 
+         
+     \item On clicking a date, the photo that is mapped on the corresponding date and the status (Present/Absent) is shown.
+     \item The student can raise a concern. If it is a concern from the current week, the TAs can resolve it, but the history can only be resolved by the professor
+     \item On raising a concern a log entry is made (which the professor can view)
+ \end{enumerate}\\
+ \hline
+ \textbf{Secondary Scenarios }:
+ \begin{itemize}[topsep=0pt]
+     \item Resolve an issue
+     \begin{itemize}[topsep=0pt]
+         \item Attended the class but marked as absent.
+         \item Didn't attend but marked as present.
+         \item Attended and marked as present, but not my photo.
+     \end{itemize}       
+ \end{itemize}\\
+ \hline 
+ \textbf{Postcondition }:
+ \begin{itemize}[topsep=0pt]
+     \item A request is sent to professor / TA in case a concern a raised.    
+ \end{itemize}\\
+ \hline
+ 
+ 
+ \end{tabular}
+ 
+  \begin{center}
+\includegraphics[scale=0.85]{check_pre_att.png}
+ {\Large Sequence diagram for view attendance}
+\end{center}
+ 
+ 
+ 
+ 
+ 
+
+
+\begin{tabular}{|p{36em}|} 
+ \hline
+ \textbf{Use Case : View Attendance (Professor / TA)}\\
+ \hline
+ \textbf{ID } : UC6\\
+ \hline
+ \textbf{Actor }: Professor, TA\\
+ \hline
+ \textbf{Precondition }:
+ \begin{itemize}[topsep=0pt]
+     \item To view the attendance and modify the extractions
+ \end{itemize}\\
+ \hline
+ \textbf{Flow of Events }:
+ \begin{enumerate}[topsep=0pt]
+     \item A list of all courses the actor is associated with is shown. The actor selects the course.
+     \item There will be two tabs
+     \begin{itemize}[topsep=0pt]
+         \item  Current Week : Classes happened in the last 7 days
+         \item  History : Earlier Classes
+     \end{itemize} 
+         
+     \item On clicking a date, the uploaded photos for the date are shown.
+     \item There are also tabs like.
+     \begin{itemize}[topsep=0pt]
+         \item Recognised mappings : On clicking which all the recognised photos are shown against the student name.
+         \item Detected faces but not recognised : On clicking which there will be a list of photos shown which have been detected but the algorithm couldn't associate them with any of the students. The actor can map it to a particular student.
+         \item Show Consolidated Attendance : Attendance statistics will be shown.
+         \item Student Concerns : List of all the issues raised by students, which can be resolved according to the permissions set. On resolving these, a log entry is made.
+     \end{itemize}     
+ \end{enumerate}\\
+ \hline
+ \textbf{Secondary Scenarios }:
+ \begin{itemize}[topsep=0pt]
+     \item Resolve an issue
+     \begin{itemize}[topsep=0pt]
+         \item Attended the class but marked as absent.
+         \item Didn't attend but marked as present.
+         \item Attended and marked as present, but not my photo.
+     \end{itemize}       
+ \end{itemize}\\
+ \hline 
+ \textbf{Postcondition }:
+ \begin{itemize}[topsep=0pt]
+     \item A request is sent to professor / TA in case a concern a raised.    
+ \end{itemize}\\
+ \hline
+ 
+ 
+ \end{tabular}
+
+
+
+    
+    
+    
+\begin{tabular}{|p{36em}|} 
+ \hline
+ \textbf{Use Case :  Raise Query (Student)}\\
+ \hline
+ \textbf{ID } : UC7\\
+ \hline
+ \textbf{Actor }: Student\\
+ \hline
+ \textbf{Precondition }:
+ \begin{itemize}[topsep=0pt]
+     \item Students can raise queries to resolve issues with their attendance
+     \item Issues include :
+     \begin{itemize}[topsep=0pt]
+         \item Attended the class but marked as absent.
+         \item Didn't attend but marked as present.
+         \item Attended and marked as present, but not my photo.
+     \end{itemize}
+ \end{itemize}\\
+ \hline
+ \textbf{Flow of Events }:
+ \begin{enumerate}[topsep=0pt]
+     \item On the page the student checks his/her attendance, to resolve issues if any the student clicks 'Raise Query' tab.
+     \item Student is directed to a mail interface with the From(Student), To (Prof/TA), and the class details prefilled.     
+     \item Student describes his issue and submits the query.      
+ \end{enumerate}\\
+ \hline
+ \textbf{Secondary Scenarios }:\\
+None\\
+ \hline 
+ \textbf{Postcondition }:
+ \begin{itemize}[topsep=0pt]
+     \item A request is sent to professor / TA in case a concern a raised.    
+ \end{itemize}\\
+ \hline
+ 
+ 
+ \end{tabular}
+ 
+  \begin{center}
+\includegraphics[scale=0.85]{raise_q.png}
+ {\Large Sequence diagram for raise query}
+\end{center}
+
+
+
+\begin{tabular}{|p{36em}|} 
+ \hline
+ \textbf{Use Case :  Answer Student Query (Professor/TA)}\\
+ \hline
+ \textbf{ID } : UC8\\
+ \hline
+ \textbf{Actor }: Professor/TA\\
+ \hline
+ \textbf{Precondition }:
+ \begin{itemize}[topsep=0pt]
+     \item Professor/TA can view the queries raised by students and respond to them.    
+ \end{itemize}\\
+ \hline
+ \textbf{Flow of Events }:
+ \begin{enumerate}[topsep=0pt]
+     \item Professor/TA views the queries raised by students.
+     \item Then the professor/TA and student discuss about the query.     
+     \item Professor/TA identifies whether the query is genuine or not.
+     \item If genuine, professor/TA manually updates the attendance such that the query is resolved.
+     \item A log entry is made in the database.
+ \end{enumerate}\\
+ \hline
+ \textbf{Secondary Scenarios }:
+\begin{itemize}[topsep=0pt]
+    \item Query raised by student is not genuine.
+\end{itemize}\\
+ \hline 
+ \textbf{Postcondition }:
+ \begin{itemize}[topsep=0pt]
+     \item Professor/TA resolves the query.    
+ \end{itemize}\\
+ \hline
+ 
+ 
+ \end{tabular}
+ 
+  \begin{center}
+\includegraphics[scale=0.85]{ans_stu_q.png}
+ {\Large Sequence diagram for answer student query}
+\end{center}
+
+
+
+\begin{tabular}{|p{36em}|} 
+ \hline
+ \textbf{Use Case :  Manually Update Attendance(Professor/TA)}\\
+ \hline
+ \textbf{ID } : UC9\\
+ \hline
+ \textbf{Actor }: Professor/TA\\
+ \hline
+ \textbf{Precondition }:
+ \begin{itemize}[topsep=0pt]
+     \item There should be an option for the professor to give attendance manually or via photograph.
+     \item The photograph has not been taken but attendance is to be updated.
+ \end{itemize}\\
+ \hline
+ \textbf{Flow of Events }:
+ \begin{enumerate}[topsep=0pt]
+     \item The professor/TA manually gives attendance to the students based on attendance which was taken in the class.
+     \item The updated attendance reflects in the student's view attendance portal.          
+ \end{enumerate}\\
+ \hline
+ \textbf{Secondary Scenarios }:
+\begin{itemize}[topsep=0pt]
+    \item No secondary scenarios since the process is done manually.
+\end{itemize}\\
+ \hline 
+ \textbf{Postcondition }:
+ \begin{itemize}[topsep=0pt]
+     \item It should be mentioned in the student's view attendance portal, that the attendance was given manually.
+     \item The students should not have an option to raise queries.
+ \end{itemize}\\
+ \hline
+ 
+ 
+ \end{tabular}
+
+ \begin{center}
+\includegraphics[scale=0.80]{man_up_att.png}
+ {\Large Sequence diagram for manually update attendance}
+\end{center}
+
+\pagebreak
+
+\subsection{Structural Models}
+
+
+\begin{center}
+{Associations}
+
+\includegraphics[scale=0.65]{ClassDiagrams-Proxy.png} 
+\end{center}
+
+\pagebreak
+\begin{center}
+{Entities}
+
+\includegraphics[scale=0.50]{entities.png} 
+\end{center}
+
+
+
+\begin{center}
+Hierarchy
+
+\includegraphics[scale=0.50]{hie.png}
+\end{center}
+
+
+
+\subsection{Behavioral Models}
+
+
+\begin{center}
+\includegraphics[scale=0.80]{data.png}
+{\Large Data Driven Model}
+\end{center}
+
+
+The photograph on input goes through the training algorithms which is trained by the student's photographs.
+
+There are four types of output types.
+
+\begin{enumerate}
+    
+    \item \textbf{Wrongly recognised face} which means that the training algorithm detected that face but recognised it wrongly and mapped it to some other person. This this fall under erratic which is then corrected by the TA / professor after which they turn to become non-erratic and can be used as training data from now on.
+    \item \textbf{Correctly recognised face} which means that the training algorithm not only detected that face but also recognised it correctly. This falls under non-erratic. This can be used as training data for further uses.
+    \item \textbf{Unrecognised faces}. These are faces which are detected by the algorithm but not recognised to get mapped with a particular student. The TA/ professor Marks the attendance of these people manually.
+    \item \textbf{Undetected faces}. These are the faces which are not detected at all. For them too TA / professor makes a manual entry on request .
+
+\end{enumerate}
+
+\section{{Computer Vision}}
+
+For computer vision, we use Microsoft Face Api.4 \newline
+Here, we illustrate the various tasks that are performed for various user actions:
+
+\begin{enumerate}
+    \item Professor creates a new course. \newline 
+    Action : For each course, we create something that's called a \textbf{Person Group} \newline
+    Description : Each course has a person group. Each person group contains various persons who are students. Initially, the person group is empty.
+    \item Admin authenticates student photograph \newline
+    Action : Upload photo to \textbf{all the Person Groups} the student is part of and each of these groups is put for \textbf{training}.\newline
+Description: Intialliy, once a student uploads his photograph, it is sent to admin for authentication. If authentication is done,t his photograph is used for identifying the student in class photographs. Thus, each of the courses that the student is a part of needs to have this photograph.
+	\item Professor adds student to a course.\newline
+    Action : \textbf{Create a person} in the person group and upload current student$'$s photographs into it. Also \textbf{train the person group}. \newline
+    Description : If a professor adds a student to a course, we create a person representing that student in the person group. We store the personId and corresponding studentId in the database. Now,all photographs the student has uploaded to date are uploaded to the person group. The person group is put for training.
+    \pagebreak
+    \item Professor uploads class photograph. \newline
+    Action: \textbf{Detect Faces} in the photograph. \textbf{Identify} the students from these faces.\newline
+    Description: We detect all the faces in the class photograph. We send these faces in batches of 10. For each of these faces, we get the corresponding person.
+    \item Student deletes photograph. \newline
+    Action: Remove student photograph from \textbf{all person groups} he/she is a part of and put all these groups for \textbf{training} \newline
+    Description : We remove student photograph from all the courses of the student. These person groups are retrained.
+\end{enumerate}
+
+\section{Role Isolation}
+Typically, we would not want professor to access student pages and student to access professor pages. Thus we require isolation between professor pages and student pages. This is achieved by using session variables and method decorators.
+Session variables are set during login and logout to identify the current user.
+Method decorators and wrappers for the views check the session variables before executing the views and thus ensure appropriate access to the users.
+
+\section{Image Size Standardization}
+The size of photos uploaded can have a wide range. It can change from as low as 100 Kb for student photographs to as high as 3Mb for class photographs. Thus, we standardize image photographs before uploading to the cloud database. Images are compressed to approximately 40-45Kb size. We use Python Imaging Library for this. One advantage of this is improved speed as uploading larger images to the cloud consumes a lot of time.
+
+\pagebreak
+\section{Logging}
+For logging, we implemented our own logger on top of Django default logging. The log files are stored in folder logs . The logging info is appended to the end of the current log file in the logs directly. After this file reaches a pre-defined limit, a new log file is generated with a different name. \newline \newline
+The way the log info is printed is as follows \newline
+\textit{[10/Apr/2017 21:24:59] [student,views.py,get:46] [INFO] [g.reva@gmail.com] Retrieved Student Info Successfully
+} \newline \newline
+It can be seen as :
+\begin{enumerate}
+	\item Date and Time of log
+    \item Django App name, File name in App, Method name in file, Line number in file
+	\item Log type : We can have 3 log types , INFO for general messages, ERROR for error messages and DEBUG for debug messages
+    \item The user
+    \item Message
+\end{enumerate}
+Logging in this way makes debugging in multi user applications much easier as we have the exact location in code where something has gone wrong, the time at which it went wrong and the user for which it went wrong.
+
+%%% End document
+\end{document}

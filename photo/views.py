@@ -23,6 +23,7 @@ import json
 import httplib, urllib, base64
 import logging
 from django.db.models import Q
+import math
 
 # Get logger
 logger = logging.getLogger('backup')
@@ -45,17 +46,25 @@ class UploadPhoto(View):
             logger.info("["+user+"] Valid Upload Photo Form")
             name = request.POST['title']
             imageList = request.FILES.getlist('image')
+            standard_size = 51200
+
             i = 0
             for image in imageList:
+                image_size = image._size
+                ratio = image_size/standard_size
+                root = math.sqrt(ratio)
+                root = int(math.floor(root+0.5))
                 logger.info("["+user+"] Saving Image")
                 instance = Photos(name = (str(name) + str(i)), pic= image)
                 instance.save()
                 logger.info("["+user+"] Image Saved")
-                foo = Image.open(instance.pic.url) 
-                (a,b) =  foo.size  
-                foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
-                foo.save(instance.pic.url)
-                logger.info("["+user+"] Image Resized")
+                foo = Image.open(instance.pic.url)                
+                if root != 0:
+                    (a,b) =  foo.size  
+                    foo = foo.resize((a/root,b/root),Image.ANTIALIAS)
+                    foo.save(instance.pic.url)
+                    logger.info("Image Resized")
+
                 logger.info("["+user+"] Uploading Image to Cloud")
                 response = cloudinary.uploader.upload(instance.pic.url)
                 logger.info("["+user+"] Uploaded Image to Cloud Successfully!")
@@ -93,17 +102,25 @@ class UploadClassPhotos(View):
             imageList = request.FILES.getlist('image')
             urls = []
             image = imageList[0]
+            standard_size = 51200
             # files = request.FILES.getlist('file_field')
             for image in imageList:
+                image_size = image._size
+                ratio = image_size/standard_size
+                root = math.sqrt(ratio)
+                root = int(math.floor(root+0.5))
                 instance = Photos(name = course, pic= image)
                 instance.save()
                 logger.info("Image Saved")
                 logger.debug("Url: "+str(instance.pic.url))
                 foo = Image.open(instance.pic.url) 
-                (a,b) =  foo.size  
-                foo = foo.resize((a/8,b/8),Image.ANTIALIAS)
-                foo.save(instance.pic.url)
-                logger.info("Image Resized")
+
+                if root != 0:
+                    (a,b) =  foo.size  
+                    foo = foo.resize((a/root,b/root),Image.ANTIALIAS)
+                    foo.save(instance.pic.url)
+                    logger.info("Image Resized")                
+                
                 logger.info("Uploading Image to Cloud")
                 response = cloudinary.uploader.upload(instance.pic.url)
                 logger.info("Uploaded Image to Cloud Successfully!")
@@ -119,7 +136,7 @@ class UploadClassPhotos(View):
             studentList = CourseGroup.objects.filter(person_group_id=(str.lower(str(info[0]))+"_"+str(info[1])))
             try:
                 context = {'course': course, 'prof' : prof, 'studentList' : studentList}
-                return render(request, 'prof/coursepage.html', context)
+                return render(request, 'coursepage.html', context)
             except Exception as e:
                 logger.error(str(e))
             return HttpResponse("Error")
