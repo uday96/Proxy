@@ -1,6 +1,6 @@
 appdirs==1.4.2
 cloudinary==1.6.1
-Django==1.10.5
+Django==2.2.24
 django-appconf==1.0.2
 django-avatar==3.1.0
 django-crispy-forms==1.6.1
